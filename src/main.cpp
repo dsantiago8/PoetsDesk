@@ -13,7 +13,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
-    const wchar_t CLASS_NAME[] = L"PoetsDeskWindowClass";
+    LPCTSTR CLASS_NAME = TEXT("PoetsDeskWindowClass");
+
 
     WNDCLASS wc = { };
     wc.lpfnWndProc   = WindowProc;
@@ -23,7 +24,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     RegisterClass(&wc);
 
     HWND hwnd = CreateWindowEx(
-        0, CLASS_NAME, L"Poet's Desk",
+        0, CLASS_NAME, TEXT("Poet's Desk"),
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, 800, 600,
         nullptr, nullptr, hInstance, nullptr
