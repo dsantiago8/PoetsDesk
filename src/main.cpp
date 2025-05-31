@@ -3,14 +3,39 @@
 #define UNICODE
 #define _UNICODE
 
+HWND hEdit;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if (uMsg == WM_DESTROY) {
-        PostQuitMessage(0);
-        return 0;
+    switch (uMsg) {
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            return 0;
+
+        case WM_SIZE: {
+            int width = LOWORD(lParam);
+            int height = HIWORD(lParam);
+            // Resize the edit control to fill the client area with padding
+            MoveWindow(hEdit, 10, 10, width - 20, height - 20, TRUE);
+            return 0;
+        }
+        case WM_ERASEBKGND:
+        // Fill the background with white to avoid artifacts
+        {
+            HDC hdc = (HDC)wParam;
+            RECT rc;
+            GetClientRect(hwnd, &rc);
+            FillRect(hdc, &rc, (HBRUSH)(COLOR_WINDOW + 1));
+            return 1;
+        }
+
+        // You can add more message handlers here (WM_COMMAND, etc.)
+
+        default:
+            return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
-    return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     LPCTSTR CLASS_NAME = TEXT("PoetsDeskWindowClass");
@@ -20,6 +45,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     wc.lpfnWndProc   = WindowProc;
     wc.hInstance     = hInstance;
     wc.lpszClassName = CLASS_NAME;
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+
 
     RegisterClass(&wc);
 
@@ -35,7 +62,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     ShowWindow(hwnd, nCmdShow);
 
     // Multiline edit box
-    HWND hEdit = CreateWindowEx(
+    hEdit = CreateWindowEx(
         WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
         WS_CHILD | WS_VISIBLE | WS_VSCROLL |
         ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN,
