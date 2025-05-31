@@ -50,6 +50,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
 
     RegisterClass(&wc);
 
+    // Main window
     HWND hwnd = CreateWindowEx(
         0, CLASS_NAME, TEXT("Poet's Desk"),
         WS_OVERLAPPEDWINDOW,
@@ -69,6 +70,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
         10, 10, 760, 540,  // x, y, width, height
         hwnd, nullptr, hInstance, nullptr
     );
+    
+    //Menu bar
+    HMENU hMenu = CreateMenu();
+
+    HMENU hFileMenu = CreatePopupMenu();
+    AppendMenu(hFileMenu, MF_STRING, 1, TEXT("New"));
+    AppendMenu(hFileMenu, MF_STRING, 2, TEXT("Open"));
+    AppendMenu(hFileMenu, MF_STRING, 3, TEXT("Save"));
+    AppendMenu(hFileMenu, MF_SEPARATOR, 0, nullptr);
+    AppendMenu(hFileMenu, MF_STRING, 4, TEXT("Exit"));
+
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, TEXT("File"));
+
+    // Attach the menu to the window
+    SetMenu(hwnd, hMenu);
 
 
     MSG msg = { };
