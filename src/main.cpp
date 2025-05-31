@@ -27,6 +27,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             FillRect(hdc, &rc, (HBRUSH)(COLOR_WINDOW + 1));
             return 1;
         }
+        case WM_COMMAND:
+            switch (LOWORD(wParam)) {
+                case 1: // New
+                    SetWindowText(hEdit, TEXT(""));
+                    break;
+                case 2: // Open
+                    MessageBox(hwnd, TEXT("Open feature not implemented yet."), TEXT("Info"), MB_OK);
+                    break;
+                case 3: // Save
+                    MessageBox(hwnd, TEXT("Save feature not implemented yet."), TEXT("Info"), MB_OK);
+                    break;
+                case 4: // Exit
+                    PostMessage(hwnd, WM_CLOSE, 0, 0);
+                    break;
+            }
+            return 0;
+
 
         // You can add more message handlers here (WM_COMMAND, etc.)
 
