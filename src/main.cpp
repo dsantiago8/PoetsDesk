@@ -34,6 +34,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
 
     ShowWindow(hwnd, nCmdShow);
 
+    // Multiline edit box
+    HWND hEdit = CreateWindowEx(
+        WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
+        WS_CHILD | WS_VISIBLE | WS_VSCROLL |
+        ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN,
+        10, 10, 760, 540,  // x, y, width, height
+        hwnd, nullptr, hInstance, nullptr
+    );
+
+
     MSG msg = { };
     while (GetMessage(&msg, nullptr, 0, 0)) {
         TranslateMessage(&msg);
