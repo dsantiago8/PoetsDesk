@@ -1,5 +1,6 @@
-// src/main.cpp
 #include <windows.h>
+#include <commdlg.h>
+
 #define UNICODE
 #define _UNICODE
 
@@ -32,9 +33,40 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case 1: // New
                     SetWindowText(hEdit, TEXT(""));
                     break;
-                case 2: // Open
-                    MessageBox(hwnd, TEXT("Open feature not implemented yet."), TEXT("Info"), MB_OK);
+                case 2: {// Open
+                    OPENFILENAME ofn = {};
+                    TCHAR szFile[MAX_PATH] = TEXT("");
+                
+                    ofn.lStructSize = sizeof(ofn);
+                    ofn.hwndOwner = hwnd;
+                    ofn.lpstrFile = szFile;
+                    ofn.nMaxFile = MAX_PATH;
+                    ofn.lpstrFilter = TEXT("Text Files (*.txt)\0*.txt\0All Files\0*.*\0");
+                    ofn.nFilterIndex = 1;
+                    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+                
+                    if (GetOpenFileName(&ofn)) {
+                        // Open and read the file
+                        HANDLE hFile = CreateFile(
+                            szFile, GENERIC_READ, 0, nullptr, OPEN_EXISTING,
+                            FILE_ATTRIBUTE_NORMAL, nullptr
+                        );
+                
+                        if (hFile != INVALID_HANDLE_VALUE) {
+                            DWORD fileSize = GetFileSize(hFile, nullptr);
+                            if (fileSize > 0) {
+                                TCHAR* buffer = new TCHAR[fileSize / sizeof(TCHAR) + 1];
+                                DWORD bytesRead;
+                                ReadFile(hFile, buffer, fileSize, &bytesRead, nullptr);
+                                buffer[bytesRead / sizeof(TCHAR)] = '\0';
+                                SetWindowText(hEdit, buffer);
+                                delete[] buffer;
+                            }
+                            CloseHandle(hFile);
+                        }
+                    }
                     break;
+                }
                 case 3: // Save
                     MessageBox(hwnd, TEXT("Save feature not implemented yet."), TEXT("Info"), MB_OK);
                     break;
@@ -87,7 +119,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
         10, 10, 760, 540,  // x, y, width, height
         hwnd, nullptr, hInstance, nullptr
     );
-    
+
     //Menu bar
     HMENU hMenu = CreateMenu();
 
