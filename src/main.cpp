@@ -74,10 +74,48 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
 
-                case 3: // Save (to be implemented)
-                    MessageBox(hwnd, TEXT("Save not implemented."), TEXT("Info"), MB_OK);
+                case 3: {// Save (to be implemented)
+                    OPENFILENAME ofn = {};
+                    TCHAR szFile[MAX_PATH] = TEXT("");
+                
+                    ofn.lStructSize = sizeof(ofn);
+                    ofn.hwndOwner = hwnd;
+                    ofn.lpstrFile = szFile;
+                    ofn.nMaxFile = MAX_PATH;
+                    ofn.lpstrFilter = TEXT("Text Files (*.txt)\0*.txt\0All Files\0*.*\0");
+                    ofn.nFilterIndex = 1;
+                    ofn.Flags = OFN_OVERWRITEPROMPT;
+                
+                    if (GetSaveFileName(&ofn)) {
+                        // Get text from the edit control
+                        int length = GetWindowTextLength(hEdit);
+                        if (length > 0) {
+                            wchar_t* wbuffer = new wchar_t[length + 1];
+                            GetWindowText(hEdit, wbuffer, length + 1);
+                
+                            // Convert to ANSI
+                            int len = WideCharToMultiByte(CP_ACP, 0, wbuffer, -1, nullptr, 0, nullptr, nullptr);
+                            char* buffer = new char[len];
+                            WideCharToMultiByte(CP_ACP, 0, wbuffer, -1, buffer, len, nullptr, nullptr);
+                
+                            // Write to file
+                            HANDLE hFile = CreateFile(
+                                szFile, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                                FILE_ATTRIBUTE_NORMAL, nullptr
+                            );
+                
+                            if (hFile != INVALID_HANDLE_VALUE) {
+                                DWORD bytesWritten;
+                                WriteFile(hFile, buffer, strlen(buffer), &bytesWritten, nullptr);
+                                CloseHandle(hFile);
+                            }
+                
+                            delete[] wbuffer;
+                            delete[] buffer;
+                        }
+                    }
                     break;
-
+                }
                 case 4: // Exit
                     PostMessage(hwnd, WM_CLOSE, 0, 0);
                     break;
