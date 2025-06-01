@@ -31,9 +31,44 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             TCHAR szFile[MAX_PATH] = TEXT("");
 
             switch (LOWORD(wParam)) {
-                case 1: // New
-                    SetWindowText(hEdit, TEXT(""));
+                case 1001: { // Sonnet
+                    const wchar_t* sonnetTemplate =
+                        L"[Title]\r\n\r\n[Author]\r\n\r\n"
+                        L"1. ____________________________________________\r\n"
+                        L"2. ____________________________________________\r\n"
+                        L"3. ____________________________________________\r\n"
+                        L"4. ____________________________________________\r\n\r\n"
+                        L"5. ____________________________________________\r\n"
+                        L"6. ____________________________________________\r\n"
+                        L"7. ____________________________________________\r\n"
+                        L"8. ____________________________________________\r\n\r\n"
+                        L"9. ____________________________________________\r\n"
+                        L"10. ___________________________________________\r\n"
+                        L"11. ___________________________________________\r\n\r\n"
+                        L"12. ___________________________________________\r\n\r"
+                        L"13. ___________________________________________\r\n"
+                        L"14. ___________________________________________\r\n";
+                    SetWindowText(hEdit, sonnetTemplate);
                     break;
+                }
+
+                case 1002: { // Haiku
+                    const wchar_t* haikuTemplate =
+                        L"[Title]\r\n\r\n[Author]\r\n\r\n"
+                        L"1. ______________________ (5 syllables)\r\n"
+                        L"2. _____________________________ (7 syllables)\r\n"
+                        L"3. ______________________ (5 syllables)\r\n";
+                    SetWindowText(hEdit, haikuTemplate);
+                    break;
+                }
+
+                case 1003: { // Free Verse
+                    const wchar_t* freeVerseTemplate =
+                        L"[Title]\r\n\r\n[Author]\r\n\r\n"
+                        L"(Begin your poem below)\r\n\r\n";
+                    SetWindowText(hEdit, freeVerseTemplate);
+                    break;
+                }
 
                 case 2: { // Open
                     ofn.lStructSize = sizeof(ofn);
@@ -58,7 +93,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                                 ReadFile(hFile, buffer, fileSize, &bytesRead, nullptr);
                                 buffer[bytesRead] = '\0';
 
-                                // Convert ANSI to Unicode
                                 int wlen = MultiByteToWideChar(CP_ACP, 0, buffer, -1, nullptr, 0);
                                 wchar_t* wbuffer = new wchar_t[wlen];
                                 MultiByteToWideChar(CP_ACP, 0, buffer, -1, wbuffer, wlen);
@@ -74,10 +108,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
 
-                case 3: {// Save (to be implemented)
-                    OPENFILENAME ofn = {};
-                    TCHAR szFile[MAX_PATH] = TEXT("");
-                
+                case 3: { // Save
                     ofn.lStructSize = sizeof(ofn);
                     ofn.hwndOwner = hwnd;
                     ofn.lpstrFile = szFile;
@@ -85,37 +116,35 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     ofn.lpstrFilter = TEXT("Text Files (*.txt)\0*.txt\0All Files\0*.*\0");
                     ofn.nFilterIndex = 1;
                     ofn.Flags = OFN_OVERWRITEPROMPT;
-                
+
                     if (GetSaveFileName(&ofn)) {
-                        // Get text from the edit control
                         int length = GetWindowTextLength(hEdit);
                         if (length > 0) {
                             wchar_t* wbuffer = new wchar_t[length + 1];
                             GetWindowText(hEdit, wbuffer, length + 1);
-                
-                            // Convert to ANSI
+
                             int len = WideCharToMultiByte(CP_ACP, 0, wbuffer, -1, nullptr, 0, nullptr, nullptr);
                             char* buffer = new char[len];
                             WideCharToMultiByte(CP_ACP, 0, wbuffer, -1, buffer, len, nullptr, nullptr);
-                
-                            // Write to file
+
                             HANDLE hFile = CreateFile(
                                 szFile, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
                                 FILE_ATTRIBUTE_NORMAL, nullptr
                             );
-                
+
                             if (hFile != INVALID_HANDLE_VALUE) {
                                 DWORD bytesWritten;
                                 WriteFile(hFile, buffer, strlen(buffer), &bytesWritten, nullptr);
                                 CloseHandle(hFile);
                             }
-                
+
                             delete[] wbuffer;
                             delete[] buffer;
                         }
                     }
                     break;
                 }
+
                 case 4: // Exit
                     PostMessage(hwnd, WM_CLOSE, 0, 0);
                     break;
@@ -150,10 +179,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
 
     if (hwnd == nullptr) return 0;
 
-    // Create menu bar
+    // Menu setup
     HMENU hMenu = CreateMenu();
     HMENU hFileMenu = CreatePopupMenu();
-    AppendMenu(hFileMenu, MF_STRING, 1, TEXT("New"));
+    HMENU hNewSubMenu = CreatePopupMenu();
+    AppendMenu(hNewSubMenu, MF_STRING, 1001, TEXT("Sonnet"));
+    AppendMenu(hNewSubMenu, MF_STRING, 1002, TEXT("Haiku"));
+    AppendMenu(hNewSubMenu, MF_STRING, 1003, TEXT("Free Verse"));
+    AppendMenu(hFileMenu, MF_POPUP, (UINT_PTR)hNewSubMenu, TEXT("New From Template"));
     AppendMenu(hFileMenu, MF_STRING, 2, TEXT("Open"));
     AppendMenu(hFileMenu, MF_STRING, 3, TEXT("Save"));
     AppendMenu(hFileMenu, MF_SEPARATOR, 0, nullptr);
