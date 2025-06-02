@@ -5,6 +5,20 @@
 
 HWND hEdit;
 
+bool ConfirmDiscardChanges(HWND hwnd) {
+    int length = GetWindowTextLength(hEdit);
+    if (length == 0) return true; // Nothing to lose
+
+    int result = MessageBox(
+        hwnd,
+        TEXT("You have unsaved changes. Do you want to discard them?"),
+        TEXT("Unsaved Changes"),
+        MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2
+    );
+
+    return result == IDYES;
+}
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_DESTROY:
@@ -32,6 +46,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             switch (LOWORD(wParam)) {
                 case 1001: { // Sonnet
+                    if (!ConfirmDiscardChanges(hwnd)) break;
                     const wchar_t* sonnetTemplate =
                         L"[Title]\r\n\r\n[Author]\r\n\r\n"
                         L"1. ____________________________________________\r\n"
@@ -53,6 +68,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case 1002: { // Haiku
+                    if (!ConfirmDiscardChanges(hwnd)) break;
                     const wchar_t* haikuTemplate =
                         L"[Title]\r\n\r\n[Author]\r\n\r\n"
                         L"1. ______________________ (5 syllables)\r\n"
@@ -63,6 +79,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case 1003: { // Free Verse
+                    if (!ConfirmDiscardChanges(hwnd)) break;
                     const wchar_t* freeVerseTemplate =
                         L"[Title]\r\n\r\n[Author]\r\n\r\n"
                         L"(Begin your poem below)\r\n\r\n";
