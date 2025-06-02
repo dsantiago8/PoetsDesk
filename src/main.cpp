@@ -163,6 +163,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case 4: // Exit
+                    if (!ConfirmDiscardChanges(hwnd)) break;
                     PostMessage(hwnd, WM_CLOSE, 0, 0);
                     break;
             }
