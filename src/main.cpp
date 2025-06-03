@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <commdlg.h>
+#include <stdio.h>
 #define UNICODE
 #define _UNICODE
 
@@ -19,6 +20,20 @@ bool ConfirmDiscardChanges(HWND hwnd) {
 
     return result == IDYES;
 }
+
+void UpdateWindowTitle(HWND hwnd) {
+    const wchar_t* baseTitle = L"Poet's Desk";
+    wchar_t fullTitle[100];
+
+    if (isModified) {
+        _snwprintf(fullTitle, 100, L"*%s", baseTitle);
+    } else {
+        _snwprintf(fullTitle, 100, L"%s", baseTitle);
+    }
+
+    SetWindowText(hwnd, fullTitle);
+}
+
 
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -51,6 +66,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_COMMAND: {
             if (HIWORD(wParam) == EN_CHANGE && (HWND)lParam == hEdit) {
                 isModified = true;
+                UpdateWindowTitle(hwnd);
                 break;
             }
             OPENFILENAME ofn = {};
@@ -77,6 +93,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         L"14. ___________________________________________\r\n";
                     SetWindowText(hEdit, sonnetTemplate);
                     isModified = false;
+                    UpdateWindowTitle(hwnd);
                     break;
                 }
 
@@ -89,6 +106,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         L"3. ______________________ (5 syllables)\r\n";
                     SetWindowText(hEdit, haikuTemplate);
                     isModified = false;
+                    UpdateWindowTitle(hwnd);
                     break;
                 }
 
@@ -99,6 +117,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         L"(Begin your poem below)\r\n\r\n";
                     SetWindowText(hEdit, freeVerseTemplate);
                     isModified = false;
+                    UpdateWindowTitle(hwnd);
                     break;
                 }
 
@@ -137,6 +156,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                             }
                             CloseHandle(hFile);
                             isModified = false;
+                            UpdateWindowTitle(hwnd);
                         }
                     }
                     break;
@@ -171,6 +191,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                                 WriteFile(hFile, buffer, strlen(buffer), &bytesWritten, nullptr);
                                 CloseHandle(hFile);
                                 isModified = false;
+                                UpdateWindowTitle(hwnd);
                             }
 
                             delete[] wbuffer;
