@@ -1,11 +1,13 @@
 #include <windows.h>
 #include <commdlg.h>
 #include <stdio.h>
+#include <commctrl.h>
+#include <wctype.h>
 #define UNICODE
 #define _UNICODE
 #define ID_FILE_SAVE 3
 
-
+HWND hStatusBar;
 HWND hEdit;
 bool isModified = false;
 
@@ -36,6 +38,31 @@ void UpdateWindowTitle(HWND hwnd) {
     SetWindowText(hwnd, fullTitle);
 }
 
+void UpdateStatusBar() {
+    int length = GetWindowTextLength(hEdit);
+    wchar_t* text = new wchar_t[length + 1];
+    GetWindowText(hEdit, text, length + 1);
+
+    int wordCount = 0, lineCount = 0, charCount = length;
+    bool inWord = false;
+
+    for (int i = 0; text[i]; ++i) {
+        if (text[i] == L'\n') lineCount++;
+        if (iswspace(text[i])) {
+            inWord = false;
+        } else if (!inWord) {
+            wordCount++;
+            inWord = true;
+        }
+    }
+    lineCount++;  // account for final line
+
+    wchar_t buffer[128];
+    _snwprintf(buffer, 128, L"Words: %d   Lines: %d   Chars: %d", wordCount, lineCount, charCount);
+    SendMessage(hStatusBar, SB_SETTEXT, 0, (LPARAM)buffer);
+
+    delete[] text;
+}
 
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -62,12 +89,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             return 0;
 
         case WM_SIZE: {
+            SendMessage(hStatusBar, WM_SIZE, 0, 0);
             int width = LOWORD(lParam);
             int height = HIWORD(lParam);
-            MoveWindow(hEdit, 10, 10, width - 20, height - 20, TRUE);
+            MoveWindow(hEdit, 10, 10, width - 20, height - 40, TRUE); // 40 for room below
             return 0;
         }
-
         case WM_ERASEBKGND: {
             HDC hdc = (HDC)wParam;
             RECT rc;
@@ -80,8 +107,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (HIWORD(wParam) == EN_CHANGE && (HWND)lParam == hEdit) {
                 isModified = true;
                 UpdateWindowTitle(hwnd);
+                UpdateStatusBar();
                 break;
-            }
+            }            
             OPENFILENAME ofn = {};
             TCHAR szFile[MAX_PATH] = TEXT("");
 
@@ -228,6 +256,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
+    InitCommonControls();
+    
     ACCEL accelTable[] = {
         { FCONTROL | FVIRTKEY, 'S', ID_FILE_SAVE },
     };
@@ -270,6 +300,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     SetMenu(hwnd, hMenu);
 
     ShowWindow(hwnd, nCmdShow);
+
+    
+    hStatusBar = CreateWindowEx(
+        0, STATUSCLASSNAME, nullptr,
+        WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP,
+        0, 0, 0, 0,
+        hwnd, nullptr, hInstance, nullptr
+    );
 
     hEdit = CreateWindowEx(
         WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
