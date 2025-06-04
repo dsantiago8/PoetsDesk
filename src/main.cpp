@@ -3,6 +3,8 @@
 #include <stdio.h>
 #define UNICODE
 #define _UNICODE
+#define ID_FILE_SAVE 3
+
 
 HWND hEdit;
 bool isModified = false;
@@ -38,6 +40,17 @@ void UpdateWindowTitle(HWND hwnd) {
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
+        case WM_KEYDOWN: {
+            if (GetAsyncKeyState(VK_CONTROL) & 0x8000) {
+                switch (wParam) {
+                    case 'S': {
+                        SendMessage(hwnd, WM_COMMAND, 3, 0); // simulate Save menu click
+                        return 0;
+                    }
+                }
+            }
+            break;
+        }        
         case WM_CLOSE:
             if (ConfirmDiscardChanges(hwnd)) {
                 DestroyWindow(hwnd); // Proceed with closing
@@ -215,6 +228,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
+    ACCEL accelTable[] = {
+        { FCONTROL | FVIRTKEY, 'S', ID_FILE_SAVE },
+    };
+    
+    HACCEL hAccel = CreateAcceleratorTable(accelTable, 1);
     LPCTSTR CLASS_NAME = TEXT("PoetsDeskWindowClass");
 
     WNDCLASS wc = {};
@@ -263,8 +281,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
 
     MSG msg = {};
     while (GetMessage(&msg, nullptr, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        if (!TranslateAccelerator(hwnd, hAccel, &msg)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
     }
 
     return 0;
