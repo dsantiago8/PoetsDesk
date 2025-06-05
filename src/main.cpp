@@ -117,6 +117,21 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             TCHAR szFile[MAX_PATH] = TEXT("");
 
             switch (LOWORD(wParam)) {
+                case 2001: { // Font customization
+                    CHOOSEFONT cf = {};
+                    cf.lStructSize = sizeof(cf);
+                    cf.hwndOwner = hwnd;
+                    cf.lpLogFont = &lf;
+                    cf.Flags = CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT;
+                
+                    if (ChooseFont(&cf)) {
+                        if (hFont) DeleteObject(hFont);  // free previous font
+                
+                        hFont = CreateFontIndirect(&lf);
+                        SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
+                    }
+                    break;
+                }             
                 case 1001: { // Sonnet
                     if (!ConfirmDiscardChanges(hwnd)) break;
                     const wchar_t* sonnetTemplate =
@@ -163,8 +178,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     isModified = false;
                     UpdateWindowTitle(hwnd);
                     break;
-                }
-
+                }   
                 case 2: { // Open
                     if (!ConfirmDiscardChanges(hwnd)) break;
                     ofn.lStructSize = sizeof(ofn);
@@ -291,6 +305,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     HMENU hMenu = CreateMenu();
     HMENU hFileMenu = CreatePopupMenu();
     HMENU hNewSubMenu = CreatePopupMenu();
+    HMENU hFormatMenu = CreatePopupMenu();
+
     AppendMenu(hNewSubMenu, MF_STRING, 1001, TEXT("Sonnet"));
     AppendMenu(hNewSubMenu, MF_STRING, 1002, TEXT("Haiku"));
     AppendMenu(hNewSubMenu, MF_STRING, 1003, TEXT("Free Verse"));
@@ -300,6 +316,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     AppendMenu(hFileMenu, MF_SEPARATOR, 0, nullptr);
     AppendMenu(hFileMenu, MF_STRING, 4, TEXT("Exit"));
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, TEXT("File"));
+    AppendMenu(hFormatMenu, MF_STRING, 2001, TEXT("Font..."));
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFormatMenu, TEXT("Format"));
     SetMenu(hwnd, hMenu);
 
     ShowWindow(hwnd, nCmdShow);
