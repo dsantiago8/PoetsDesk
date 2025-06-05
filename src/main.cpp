@@ -3,9 +3,24 @@
 #include <stdio.h>
 #include <commctrl.h>
 #include <wctype.h>
+#include <Richedit.h>
+#include <RichOle.h>
+#pragma comment(lib, "Msftedit.lib")
 #define UNICODE
 #define _UNICODE
 #define ID_FILE_SAVE 3
+
+#ifndef MSFTEDIT_CLASS
+#define MSFTEDIT_CLASS L"RICHEDIT50W"
+#endif
+#ifndef IMF_SPELLCHECKING
+#define IMF_SPELLCHECKING 0x00000800
+#endif
+#ifndef IMF_AUTOCORRECT
+#define IMF_AUTOCORRECT   0x00000400
+#endif
+
+
 
 HWND hStatusBar;
 HWND hEdit;
@@ -266,7 +281,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
             return 0;
         }
-
+        case WM_NOTIFY: {
+            NMHDR* pNMHDR = (NMHDR*)lParam;
+            if (pNMHDR->hwndFrom == hEdit && pNMHDR->code == EN_CHANGE) {
+                isModified = true;
+                UpdateWindowTitle(hwnd);
+                UpdateStatusBar();
+                return 0;
+            }
+            break;
+        }
+        
         default:
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
@@ -330,13 +355,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
         hwnd, nullptr, hInstance, nullptr
     );
 
+    LoadLibrary(TEXT("Msftedit.dll"));  // Required to load RichEdit 4.1+
+
     hEdit = CreateWindowEx(
-        WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
+        WS_EX_CLIENTEDGE, MSFTEDIT_CLASS, TEXT(""),
         WS_CHILD | WS_VISIBLE | WS_VSCROLL |
         ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN,
         10, 10, 760, 540,
         hwnd, nullptr, hInstance, nullptr
     );
+
+    SendMessage(hEdit, EM_SETLANGOPTIONS, 0, IMF_SPELLCHECKING | IMF_AUTOCORRECT);
+    SendMessage(hEdit, EM_SETEVENTMASK, 0, ENM_CHANGE | ENM_SELCHANGE);
 
     MSG msg = {};
     while (GetMessage(&msg, nullptr, 0, 0)) {
