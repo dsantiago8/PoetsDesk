@@ -10,6 +10,9 @@
 HWND hStatusBar;
 HWND hEdit;
 bool isModified = false;
+HFONT hFont = nullptr;
+LOGFONT lf = {};
+
 
 
 bool ConfirmDiscardChanges(HWND hwnd) {
