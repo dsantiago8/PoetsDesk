@@ -19,6 +19,16 @@
 #ifndef IMF_AUTOCORRECT
 #define IMF_AUTOCORRECT   0x00000400
 #endif
+#ifndef EM_BEGINUNDOACTION
+#define EM_BEGINUNDOACTION 0x04C8
+#endif
+#ifndef EM_ENDUNDOACTION
+#define EM_ENDUNDOACTION 0x04C9
+#endif
+#ifndef EM_EMPTYUNDOBUFFER
+#define EM_EMPTYUNDOBUFFER 0x0455
+#endif
+
 
 
 
@@ -132,6 +142,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             TCHAR szFile[MAX_PATH] = TEXT("");
 
             switch (LOWORD(wParam)) {
+                case 3001: { // Undo
+                    SendMessage(hEdit, WM_UNDO, 0, 0);
+                    break;
+                }
                 case 2001: { // Font customization
                     CHOOSEFONT cf = {};
                     cf.lStructSize = sizeof(cf);
@@ -165,7 +179,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         L"12. ___________________________________________\r\n\r"
                         L"13. ___________________________________________\r\n"
                         L"14. ___________________________________________\r\n";
+                    
                     SetWindowText(hEdit, sonnetTemplate);
+                    SendMessage(hEdit, EM_BEGINUNDOACTION, 0, 0);
+                    SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
                     isModified = false;
                     UpdateWindowTitle(hwnd);
                     break;
@@ -178,7 +195,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         L"1. ______________________ (5 syllables)\r\n"
                         L"2. _____________________________ (7 syllables)\r\n"
                         L"3. ______________________ (5 syllables)\r\n";
+
                     SetWindowText(hEdit, haikuTemplate);
+                    SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
                     isModified = false;
                     UpdateWindowTitle(hwnd);
                     break;
@@ -189,7 +208,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     const wchar_t* freeVerseTemplate =
                         L"[Title]\r\n\r\n[Author]\r\n\r\n"
                         L"(Begin your poem below)\r\n\r\n";
+
                     SetWindowText(hEdit, freeVerseTemplate);
+                    SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
+                    
                     isModified = false;
                     UpdateWindowTitle(hwnd);
                     break;
@@ -223,6 +245,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                                 MultiByteToWideChar(CP_ACP, 0, buffer, -1, wbuffer, wlen);
 
                                 SetWindowText(hEdit, wbuffer);
+                                SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
 
                                 delete[] buffer;
                                 delete[] wbuffer;
@@ -302,6 +325,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     
     ACCEL accelTable[] = {
         { FCONTROL | FVIRTKEY, 'S', ID_FILE_SAVE },
+        { FCONTROL | FVIRTKEY, 'Z', 3001 },
     };
     
     HACCEL hAccel = CreateAcceleratorTable(accelTable, 1);
@@ -365,6 +389,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
         hwnd, nullptr, hInstance, nullptr
     );
 
+    SendMessage(hEdit, EM_SETOPTIONS, ECOOP_OR, ECO_AUTOWORDSELECTION);
     SendMessage(hEdit, EM_SETLANGOPTIONS, 0, IMF_SPELLCHECKING | IMF_AUTOCORRECT);
     SendMessage(hEdit, EM_SETEVENTMASK, 0, ENM_CHANGE | ENM_SELCHANGE);
 
