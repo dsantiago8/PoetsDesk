@@ -181,9 +181,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         L"13. ___________________________________________\r\n"
                         L"14. ___________________________________________\r\n";
                     
-                    SetWindowText(hEdit, sonnetTemplate);
                     SendMessage(hEdit, EM_BEGINUNDOACTION, 0, 0);
-                    SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
+                    SetWindowText(hEdit, sonnetTemplate);
+                    SendMessage(hEdit, EM_ENDUNDOACTION, 0, 0);
+                    // SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
                     isModified = false;
                     UpdateWindowTitle(hwnd);
                     break;
@@ -196,9 +197,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         L"1. ______________________ (5 syllables)\r\n"
                         L"2. _____________________________ (7 syllables)\r\n"
                         L"3. ______________________ (5 syllables)\r\n";
-
+                    
+                    SendMessage(hEdit, EM_BEGINUNDOACTION, 0, 0);
                     SetWindowText(hEdit, haikuTemplate);
-                    SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
+                    SendMessage(hEdit, EM_ENDUNDOACTION, 0, 0);
+                    // SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
                     isModified = false;
                     UpdateWindowTitle(hwnd);
                     break;
@@ -210,8 +213,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         L"[Title]\r\n\r\n[Author]\r\n\r\n"
                         L"(Begin your poem below)\r\n\r\n";
 
+                    SendMessage(hEdit, EM_BEGINUNDOACTION, 0, 0);
                     SetWindowText(hEdit, freeVerseTemplate);
-                    SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
+                    SendMessage(hEdit, EM_ENDUNDOACTION, 0, 0);
+                    // SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
                     
                     isModified = false;
                     UpdateWindowTitle(hwnd);
@@ -245,8 +250,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                                 wchar_t* wbuffer = new wchar_t[wlen];
                                 MultiByteToWideChar(CP_ACP, 0, buffer, -1, wbuffer, wlen);
 
+                                SendMessage(hEdit, EM_BEGINUNDOACTION, 0, 0);
                                 SetWindowText(hEdit, wbuffer);
-                                SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
+                                SendMessage(hEdit, EM_ENDUNDOACTION, 0, 0);
+                                // SendMessage(hEdit, EM_EMPTYUNDOBUFFER, 0, 0);
 
                                 delete[] buffer;
                                 delete[] wbuffer;
