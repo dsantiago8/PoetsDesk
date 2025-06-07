@@ -461,7 +461,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
         hwnd, nullptr, hInstance, nullptr
     );
 
-    int parts[] = { 400, -1 };  // Two parts: first 400px, rest fills
+    int parts[] = { 680, -1 };  // Two parts: first 400px, rest fills
     SendMessage(hStatusBar, SB_SETPARTS, 2, (LPARAM)parts);
 
     LoadLibrary(TEXT("Msftedit.dll"));  // Required to load RichEdit 4.1+
