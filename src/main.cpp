@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <sstream>
+#include <wchar.h> 
 
 #pragma comment(lib, "Msftedit.lib")
 #define UNICODE
@@ -42,6 +44,51 @@ bool isModified = false;
 HFONT hFont = nullptr;
 LOGFONT lf = {};
 
+int EstimateSyllables(const std::wstring& word) {
+    int count = 0;
+    bool prevVowel = false;
+    for (wchar_t ch : word) {
+        ch = towlower(ch);
+        bool isVowel = wcschr(L"aeiouy", ch);
+        if (isVowel && !prevVowel) count++;
+        prevVowel = isVowel;
+    }
+
+    // Handle common silent 'e'
+    if (word.length() > 2 && word.back() == L'e' && !wcschr(L"aeiouy", word[word.length() - 2]))
+        count--;
+
+    return std::max(count, 1);
+}
+
+void CountSyllablesPerLine() {
+    int length = GetWindowTextLength(hEdit);
+    if (length == 0) return;
+
+    std::wstring text(length, L'\0');
+    GetWindowText(hEdit, &text[0], length + 1);
+
+    std::wstringstream stream(text);
+    std::wstring line;
+    int lineNum = 1;
+
+    OutputDebugString(L"\nSyllable Counts:\n");
+
+    while (std::getline(stream, line)) {
+        std::wstringstream words(line);
+        std::wstring word;
+        int syllableCount = 0;
+
+        while (words >> word) {
+            syllableCount += EstimateSyllables(word);
+        }
+
+        wchar_t buffer[128];
+        _snwprintf(buffer, 128, L"Line %d: %d syllables\n", lineNum++, syllableCount);
+        OutputDebugString(buffer);
+    }
+}
+
 
 bool ConfirmDiscardChanges(HWND hwnd) {
     if (!isModified) return true;
@@ -71,6 +118,11 @@ void UpdateWindowTitle(HWND hwnd) {
 
 void UpdateStatusBar() {
     int length = GetWindowTextLength(hEdit);
+    if (length == 0) {
+        SendMessage(hStatusBar, SB_SETTEXT, 0, (LPARAM)L"Words: 0   Lines: 0   Chars: 0");
+        SendMessage(hStatusBar, SB_SETTEXT, 1, (LPARAM)L"Syllables: 0");
+        return;
+    }
     wchar_t* text = new wchar_t[length + 1];
     GetWindowText(hEdit, text, length + 1);
 
@@ -91,6 +143,28 @@ void UpdateStatusBar() {
     wchar_t buffer[128];
     _snwprintf(buffer, 128, L"Words: %d   Lines: %d   Chars: %d", wordCount, lineCount, charCount);
     SendMessage(hStatusBar, SB_SETTEXT, 0, (LPARAM)buffer);
+
+     // Get caret position and line
+     DWORD pos = SendMessage(hEdit, EM_GETSEL, 0, 0);
+     int caretIndex = LOWORD(pos);
+     int line = SendMessage(hEdit, EM_LINEFROMCHAR, caretIndex, 0);
+ 
+     wchar_t lineBuf[512] = { 0 };
+     *(WORD*)lineBuf = 511;
+     SendMessage(hEdit, EM_GETLINE, line, (LPARAM)lineBuf);
+     lineBuf[511] = L'\0';
+ 
+     std::wstringstream stream(lineBuf);
+     std::wstring word;
+     int syllableCount = 0;
+ 
+     while (stream >> word) {
+         syllableCount += EstimateSyllables(word);
+     }
+ 
+     wchar_t sylBuf[64];
+     _snwprintf(sylBuf, 64, L"Syllables: %d", syllableCount);
+     SendMessage(hStatusBar, SB_SETTEXT, 1, (LPARAM)sylBuf);
 
     delete[] text;
 }
@@ -386,6 +460,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
         0, 0, 0, 0,
         hwnd, nullptr, hInstance, nullptr
     );
+
+    int parts[] = { 400, -1 };  // Two parts: first 400px, rest fills
+    SendMessage(hStatusBar, SB_SETPARTS, 2, (LPARAM)parts);
 
     LoadLibrary(TEXT("Msftedit.dll"));  // Required to load RichEdit 4.1+
 
