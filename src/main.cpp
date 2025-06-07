@@ -5,10 +5,16 @@
 #include <wctype.h>
 #include <Richedit.h>
 #include <RichOle.h>
+#include <vector>
+#include <string>
+#include <chrono>
+
 #pragma comment(lib, "Msftedit.lib")
 #define UNICODE
 #define _UNICODE
 #define ID_FILE_SAVE 3
+#define ID_EDIT_UNDO 3001
+#define ID_EDIT_FONT 2001
 
 #ifndef MSFTEDIT_CLASS
 #define MSFTEDIT_CLASS L"RICHEDIT50W"
@@ -30,14 +36,11 @@
 #endif
 
 
-
-
 HWND hStatusBar;
 HWND hEdit;
 bool isModified = false;
 HFONT hFont = nullptr;
 LOGFONT lf = {};
-
 
 
 bool ConfirmDiscardChanges(HWND hwnd) {
@@ -111,7 +114,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 DestroyWindow(hwnd); // Proceed with closing
             }
             return 0;
-
+        
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
@@ -130,7 +133,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             FillRect(hdc, &rc, (HBRUSH)(COLOR_WINDOW + 1));
             return 1;
         }
-
         case WM_COMMAND: {
             if (HIWORD(wParam) == EN_CHANGE && (HWND)lParam == hEdit) {
                 isModified = true;
@@ -142,10 +144,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             TCHAR szFile[MAX_PATH] = TEXT("");
 
             switch (LOWORD(wParam)) {
-                case 3001: { // Undo
-                    SendMessage(hEdit, WM_UNDO, 0, 0);
+                case ID_EDIT_UNDO:
+                    SendMessage(hEdit, EM_UNDO, 0, 0);
                     break;
-                }
                 case 2001: { // Font customization
                     CHOOSEFONT cf = {};
                     cf.lStructSize = sizeof(cf);
@@ -325,10 +326,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     
     ACCEL accelTable[] = {
         { FCONTROL | FVIRTKEY, 'S', ID_FILE_SAVE },
-        { FCONTROL | FVIRTKEY, 'Z', 3001 },
+        { FCONTROL | FVIRTKEY, 'Z', ID_EDIT_UNDO },
     };
     
-    HACCEL hAccel = CreateAcceleratorTable(accelTable, 1);
+    HACCEL hAccel = CreateAcceleratorTable(accelTable, 2);
     LPCTSTR CLASS_NAME = TEXT("PoetsDeskWindowClass");
 
     WNDCLASS wc = {};
