@@ -37,6 +37,7 @@
 #define EM_EMPTYUNDOBUFFER 0x0455
 #endif
 
+#pragma comment(lib, "comdlg32.lib")
 
 HWND hStatusBar;
 HWND hEdit;
@@ -383,6 +384,35 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     if (!ConfirmDiscardChanges(hwnd)) break;
                     PostMessage(hwnd, WM_CLOSE, 0, 0);
                     break;
+                case 5: { // Print
+                    PRINTDLG pd = {};
+                    pd.lStructSize = sizeof(pd);
+                    pd.hwndOwner = hwnd;
+                    pd.Flags = PD_RETURNDC;
+
+                    if (PrintDlg(&pd)) {
+                        DOCINFO di = {};
+                        di.cbSize = sizeof(di);
+                        di.lpszDocName = L"Poem";
+
+                        if (StartDoc(pd.hDC, &di) > 0) {
+                            StartPage(pd.hDC);
+
+                            int length = GetWindowTextLength(hEdit);
+                            wchar_t* buffer = new wchar_t[length + 1];
+                            GetWindowText(hEdit, buffer, length + 1);
+
+                            // Print text (basic version)
+                            TextOut(pd.hDC, 100, 100, buffer, wcslen(buffer));
+
+                            EndPage(pd.hDC);
+                            EndDoc(pd.hDC);
+                            DeleteDC(pd.hDC);
+                            delete[] buffer;
+                        }
+                    }
+                    break;
+                }
             }
             return 0;
         }
@@ -447,8 +477,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     AppendMenu(hFileMenu, MF_SEPARATOR, 0, nullptr);
     AppendMenu(hFileMenu, MF_STRING, 4, TEXT("Exit"));
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, TEXT("File"));
-    AppendMenu(hFormatMenu, MF_STRING, 2001, TEXT("Font..."));
+    AppendMenu(hFormatMenu, MF_STRING, 2001, TEXT("Font"));
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFormatMenu, TEXT("Format"));
+    AppendMenu(hFileMenu, MF_STRING, 5, TEXT("Print"));
+
     SetMenu(hwnd, hMenu);
 
     ShowWindow(hwnd, nCmdShow);
