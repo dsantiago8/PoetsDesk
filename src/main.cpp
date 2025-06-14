@@ -397,19 +397,35 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                         if (StartDoc(pd.hDC, &di) > 0) {
                             StartPage(pd.hDC);
-
+                        
+                            // Set the font
+                            if (hFont) {
+                                SelectObject(pd.hDC, hFont);
+                            }
+                        
+                            // Get the text
                             int length = GetWindowTextLength(hEdit);
-                            wchar_t* buffer = new wchar_t[length + 1];
-                            GetWindowText(hEdit, buffer, length + 1);
-
-                            // Print text (basic version)
-                            TextOut(pd.hDC, 100, 100, buffer, wcslen(buffer));
-
+                            if (length > 0) {
+                                wchar_t* buffer = new wchar_t[length + 1];
+                                GetWindowText(hEdit, buffer, length + 1);
+                        
+                                // Set printable area (in device units, e.g., pixels at 96 DPI)
+                                RECT printRect;
+                                printRect.left = 100;
+                                printRect.top = 100;
+                                printRect.right = 800;  // Adjust to fit your page width
+                                printRect.bottom = 1100;  // Adjust to fit your page height
+                        
+                                // Draw with wrapping
+                                DrawTextW(pd.hDC, buffer, -1, &printRect, DT_LEFT | DT_WORDBREAK);
+                        
+                                delete[] buffer;
+                            }
+                        
                             EndPage(pd.hDC);
                             EndDoc(pd.hDC);
                             DeleteDC(pd.hDC);
-                            delete[] buffer;
-                        }
+                        }                        
                     }
                     break;
                 }
