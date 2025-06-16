@@ -39,12 +39,17 @@
 
 #pragma comment(lib, "comdlg32.lib")
 
+// Global declarations 
+HWND hPreview = nullptr;
+HBITMAP hPreviewBitmap = nullptr;
 HWND hStatusBar;
 HWND hEdit;
 bool isModified = false;
 HFONT hFont = nullptr;
 LOGFONT lf = {};
 
+
+// Function: Counts syllables
 int EstimateSyllables(const std::wstring& word) {
     int count = 0;
     bool prevVowel = false;
