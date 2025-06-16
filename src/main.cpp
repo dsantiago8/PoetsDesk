@@ -397,7 +397,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                         if (StartDoc(pd.hDC, &di) > 0) {
                             if (StartPage(pd.hDC) > 0) {
-
+                                // Ensures document is selected and formatted for printing
+                                SendMessage(hEdit, EM_SETSEL, 0, -1);
+                                
                                 // Force layout update
                                 RedrawWindow(hEdit, nullptr, nullptr, RDW_INTERNALPAINT | RDW_UPDATENOW);
 
