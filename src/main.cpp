@@ -391,49 +391,52 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     pd.Flags = PD_RETURNDC | PD_USEDEVMODECOPIESANDCOLLATE | PD_NOPAGENUMS | PD_NOSELECTION;
 
                     if (PrintDlg(&pd)) {
+                        if (!pd.hDC) {
+                            MessageBox(hwnd, L"Printing was canceled or failed to initialize.", L"Print", MB_ICONERROR);
+                            return 0;
+                        }
+
+                        // Inform user to complete Save As if using PDF printer
+                        MessageBox(hwnd, L"If using a PDF printer, complete the Save As dialog before continuing.", L"Print", MB_OK);
+
                         DOCINFO di = {};
                         di.cbSize = sizeof(di);
                         di.lpszDocName = L"Poem";
 
                         if (StartDoc(pd.hDC, &di) > 0) {
-                            if (StartPage(pd.hDC) > 0) {
-                                // Ensures document is selected and formatted for printing
-                                SendMessage(hEdit, EM_SETSEL, 0, -1);
-                                
-                                // Force layout update
-                                RedrawWindow(hEdit, nullptr, nullptr, RDW_INTERNALPAINT | RDW_UPDATENOW);
+                            FORMATRANGE fr = {};
+                            fr.hdc = pd.hDC;
+                            fr.hdcTarget = pd.hDC;
 
-                                FORMATRANGE fr = {};
-                                fr.hdc = pd.hDC;
-                                fr.hdcTarget = pd.hDC;
-                                fr.rcPage.left = 1440;
-                                fr.rcPage.top = 1440;
-                                fr.rcPage.right = 12240;
-                                fr.rcPage.bottom = 15480;
+                            // Printable area in twips (1 inch = 1440 twips)
+                            fr.rcPage.left = 1440;
+                            fr.rcPage.top = 1440;
+                            fr.rcPage.right = 12240;
+                            fr.rcPage.bottom = 15480;
 
-                                fr.rc = fr.rcPage;
+                            fr.rc = fr.rcPage;           // Content area
+                            fr.chrg.cpMin = 0;
+                            fr.chrg.cpMax = -1;          // To end of text
 
-                                fr.chrg.cpMin = 0;
-                                fr.chrg.cpMax = -1;
+                            SetMapMode(pd.hDC, MM_TWIPS);
 
-                                // Set map mode for twips
-                                SetMapMode(pd.hDC, MM_TWIPS);
-
-                                // Perform actual drawing
-                                SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
-
-                                // End printing
+                            int page = 1;
+                            LONG nextChar;
+                            do {
+                                StartPage(pd.hDC);
+                                nextChar = SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
                                 EndPage(pd.hDC);
-                            }
+
+                                fr.chrg.cpMin = nextChar;
+                            } while (nextChar < fr.chrg.cpMax);
 
                             EndDoc(pd.hDC);
                         }
 
                         DeleteDC(pd.hDC);
-
-                        // Clear cached formatting
-                        SendMessage(hEdit, EM_FORMATRANGE, FALSE, 0);
+                        SendMessage(hEdit, EM_FORMATRANGE, FALSE, 0); // Cleanup cached info
                     }
+
                     break;
                 }
             }
