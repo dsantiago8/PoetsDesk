@@ -388,47 +388,35 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     PRINTDLG pd = {};
                     pd.lStructSize = sizeof(pd);
                     pd.hwndOwner = hwnd;
-                    pd.Flags = PD_RETURNDC;
+                    pd.Flags = PD_RETURNDC | PD_USEDEVMODECOPIESANDCOLLATE | PD_NOPAGENUMS | PD_NOSELECTION;
 
                     if (PrintDlg(&pd)) {
-                        DOCINFO di = {};
-                        di.cbSize = sizeof(di);
-                        di.lpszDocName = L"Poem";
+                        FORMATRANGE fr = {};
+                        fr.hdc = pd.hDC;             // Printer DC for rendering
+                        fr.hdcTarget = pd.hDC;       // Used for measuring
+                        fr.rcPage.left = 1440;       // 0.1 inch = 144 twips (1 inch = 1440 twips)
+                        fr.rcPage.top = 1440;
+                        fr.rcPage.right = 12240;     // 8.5 inch - 1 in margins = 7.5 inch = 10800 twips + 1440 left margin
+                        fr.rcPage.bottom = 15480;    // 11 inch - 1 in margins = 9 inch = 12960 twips + 1440 top margin
 
-                        if (StartDoc(pd.hDC, &di) > 0) {
-                            StartPage(pd.hDC);
-                        
-                            // Set the font
-                            if (hFont) {
-                                SelectObject(pd.hDC, hFont);
-                            }
-                        
-                            // Get the text
-                            int length = GetWindowTextLength(hEdit);
-                            if (length > 0) {
-                                wchar_t* buffer = new wchar_t[length + 1];
-                                GetWindowText(hEdit, buffer, length + 1);
-                        
-                                // Set printable area (in device units, e.g., pixels at 96 DPI)
-                                RECT printRect;
-                                printRect.left = 100;
-                                printRect.top = 100;
-                                printRect.right = 800;  // Adjust to fit your page width
-                                printRect.bottom = 1100;  // Adjust to fit your page height
-                        
-                                // Draw with wrapping
-                                DrawTextW(pd.hDC, buffer, -1, &printRect, DT_LEFT | DT_WORDBREAK);
-                        
-                                delete[] buffer;
-                            }
-                        
-                            EndPage(pd.hDC);
-                            EndDoc(pd.hDC);
-                            DeleteDC(pd.hDC);
-                        }                        
+                        fr.rc = fr.rcPage;           // Content area (same as page for now)
+
+                        fr.chrg.cpMin = 0;
+                        fr.chrg.cpMax = -1;          // Until end of text
+
+                        // Set map mode (required)
+                        SetMapMode(pd.hDC, MM_TWIPS);
+
+                        // Let Rich Edit draw formatted content
+                        SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
+
+                        // Clean up after drawing
+                        SendMessage(hEdit, EM_FORMATRANGE, FALSE, 0);
+
                     }
                     break;
                 }
+
             }
             return 0;
         }
