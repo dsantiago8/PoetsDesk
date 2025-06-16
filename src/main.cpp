@@ -391,32 +391,49 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     pd.Flags = PD_RETURNDC | PD_USEDEVMODECOPIESANDCOLLATE | PD_NOPAGENUMS | PD_NOSELECTION;
 
                     if (PrintDlg(&pd)) {
-                        FORMATRANGE fr = {};
-                        fr.hdc = pd.hDC;             // Printer DC for rendering
-                        fr.hdcTarget = pd.hDC;       // Used for measuring
-                        fr.rcPage.left = 1440;       // 0.1 inch = 144 twips (1 inch = 1440 twips)
-                        fr.rcPage.top = 1440;
-                        fr.rcPage.right = 12240;     // 8.5 inch - 1 in margins = 7.5 inch = 10800 twips + 1440 left margin
-                        fr.rcPage.bottom = 15480;    // 11 inch - 1 in margins = 9 inch = 12960 twips + 1440 top margin
+                        DOCINFO di = {};
+                        di.cbSize = sizeof(di);
+                        di.lpszDocName = L"Poem";
 
-                        fr.rc = fr.rcPage;           // Content area (same as page for now)
+                        if (StartDoc(pd.hDC, &di) > 0) {
+                            if (StartPage(pd.hDC) > 0) {
 
-                        fr.chrg.cpMin = 0;
-                        fr.chrg.cpMax = -1;          // Until end of text
+                                // Force layout update
+                                RedrawWindow(hEdit, nullptr, nullptr, RDW_INTERNALPAINT | RDW_UPDATENOW);
 
-                        // Set map mode (required)
-                        SetMapMode(pd.hDC, MM_TWIPS);
+                                FORMATRANGE fr = {};
+                                fr.hdc = pd.hDC;
+                                fr.hdcTarget = pd.hDC;
+                                fr.rcPage.left = 1440;
+                                fr.rcPage.top = 1440;
+                                fr.rcPage.right = 12240;
+                                fr.rcPage.bottom = 15480;
 
-                        // Let Rich Edit draw formatted content
-                        SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
+                                fr.rc = fr.rcPage;
 
-                        // Clean up after drawing
+                                fr.chrg.cpMin = 0;
+                                fr.chrg.cpMax = -1;
+
+                                // Set map mode for twips
+                                SetMapMode(pd.hDC, MM_TWIPS);
+
+                                // Perform actual drawing
+                                SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
+
+                                // End printing
+                                EndPage(pd.hDC);
+                            }
+
+                            EndDoc(pd.hDC);
+                        }
+
+                        DeleteDC(pd.hDC);
+
+                        // Clear cached formatting
                         SendMessage(hEdit, EM_FORMATRANGE, FALSE, 0);
-
                     }
                     break;
                 }
-
             }
             return 0;
         }
@@ -513,6 +530,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     SendMessage(hEdit, EM_SETOPTIONS, ECOOP_OR, ECO_AUTOWORDSELECTION);
     SendMessage(hEdit, EM_SETLANGOPTIONS, 0, IMF_SPELLCHECKING | IMF_AUTOCORRECT);
     SendMessage(hEdit, EM_SETEVENTMASK, 0, ENM_CHANGE | ENM_SELCHANGE);
+    SendMessage(hEdit, EM_SETTARGETDEVICE, (WPARAM)nullptr, 0);
+
 
     MSG msg = {};
     while (GetMessage(&msg, nullptr, 0, 0)) {
