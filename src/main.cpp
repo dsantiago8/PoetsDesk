@@ -36,12 +36,12 @@
 #ifndef EM_EMPTYUNDOBUFFER
 #define EM_EMPTYUNDOBUFFER 0x0455
 #endif
+#define ID_PREVIEW 6
 
 #pragma comment(lib, "comdlg32.lib")
 
-// Global declarations 
-HWND hPreview = nullptr;
-HBITMAP hPreviewBitmap = nullptr;
+// Global declarations
+HBITMAP hPreviewBitmap; 
 HWND hStatusBar;
 HWND hEdit;
 bool isModified = false;
@@ -66,35 +66,6 @@ int EstimateSyllables(const std::wstring& word) {
 
     return std::max(count, 1);
 }
-
-void CountSyllablesPerLine() {
-    int length = GetWindowTextLength(hEdit);
-    if (length == 0) return;
-
-    std::wstring text(length, L'\0');
-    GetWindowText(hEdit, &text[0], length + 1);
-
-    std::wstringstream stream(text);
-    std::wstring line;
-    int lineNum = 1;
-
-    OutputDebugString(L"\nSyllable Counts:\n");
-
-    while (std::getline(stream, line)) {
-        std::wstringstream words(line);
-        std::wstring word;
-        int syllableCount = 0;
-
-        while (words >> word) {
-            syllableCount += EstimateSyllables(word);
-        }
-
-        wchar_t buffer[128];
-        _snwprintf(buffer, 128, L"Line %d: %d syllables\n", lineNum++, syllableCount);
-        OutputDebugString(buffer);
-    }
-}
-
 
 bool ConfirmDiscardChanges(HWND hwnd) {
     if (!isModified) return true;
@@ -175,6 +146,88 @@ void UpdateStatusBar() {
     delete[] text;
 }
 
+LRESULT CALLBACK PreviewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+        case WM_PAINT: {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+            if (hPreviewBitmap) {
+                HDC memDC = CreateCompatibleDC(hdc);
+                HGDIOBJ old = SelectObject(memDC, hPreviewBitmap);
+                BitBlt(hdc, 0, 0, 800, 1100, memDC, 0, 0, SRCCOPY);
+                SelectObject(memDC, old);
+                DeleteDC(memDC);
+            }
+            EndPaint(hwnd, &ps);
+            return 0;
+        }
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            return 0;
+    }
+    return DefWindowProc(hwnd, msg, wParam, lParam);
+}
+
+void GeneratePrintPreview(HWND hEdit, HDC targetDC) {
+    FORMATRANGE fr = {};
+    fr.hdc = targetDC;
+    fr.hdcTarget = targetDC;
+    fr.rcPage = {0, 0, 12240, 15840}; // 8.5x11"
+    fr.rc = {1440, 1440, 12240 - 1440, 15840 - 1440};
+    fr.chrg.cpMin = 0;
+    fr.chrg.cpMax = -1;
+
+    SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
+    SendMessage(hEdit, EM_FORMATRANGE, FALSE, 0);
+}
+
+
+void ShowPrintPreview(HWND hwndParent, HWND hEdit) {
+    // Get text length
+    int length = GetWindowTextLength(hEdit);
+    if (length == 0) return;
+
+    // Get text content
+    std::wstring text(length, L'\0');
+    GetWindowText(hEdit, &text[0], length + 1);
+
+    // Create a memory DC and compatible bitmap
+    HDC hdcScreen = GetDC(hwndParent);
+    HDC hdcMem = CreateCompatibleDC(hdcScreen);
+    HBITMAP hBitmap = CreateCompatibleBitmap(hdcScreen, 800, 1000);
+    SelectObject(hdcMem, hBitmap);
+
+    // Set white background
+    RECT rect = { 0, 0, 800, 1000 };
+    FillRect(hdcMem, &rect, (HBRUSH)(COLOR_WINDOW + 1));
+
+    // Set up FORMAT RANGE for preview rendering
+    FORMATRANGE fr = {};
+    fr.hdc = hdcMem;
+    fr.hdcTarget = hdcMem;
+    fr.rcPage = { 0, 0, 1440 * 8, 1440 * 10 }; // TWIPS
+    fr.rc = { 180, 180, 1440 * 7, 1440 * 9 };  // 1.25" margin
+    fr.chrg.cpMin = 0;
+    fr.chrg.cpMax = -1;
+
+    SetMapMode(hdcMem, MM_TWIPS);
+    SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
+    SendMessage(hEdit, EM_FORMATRANGE, FALSE, 0);
+
+    // Create preview window
+    HWND hPreview = CreateWindowEx(WS_EX_CLIENTEDGE, L"STATIC", L"", WS_POPUP | WS_VISIBLE | SS_BITMAP,
+                                   100, 100, 800, 1000, hwndParent, nullptr, nullptr, nullptr);
+    SendMessage(hPreview, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
+
+    // Let user view preview
+    MessageBox(hwndParent, L"Close this preview to return.", L"Print Preview", MB_OK);
+    DestroyWindow(hPreview);
+
+    // Cleanup
+    DeleteObject(hBitmap);
+    DeleteDC(hdcMem);
+    ReleaseDC(hwndParent, hdcScreen);
+}
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -444,6 +497,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                     break;
                 }
+                case ID_PREVIEW: {
+                    ShowPrintPreview(hwnd, hEdit);
+                    break;
+                }
             }
             return 0;
         }
@@ -511,6 +568,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     AppendMenu(hFormatMenu, MF_STRING, 2001, TEXT("Font"));
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFormatMenu, TEXT("Format"));
     AppendMenu(hFileMenu, MF_STRING, 5, TEXT("Print"));
+    AppendMenu(hFileMenu, MF_STRING, ID_PREVIEW, TEXT("Print Preview"));
 
     SetMenu(hwnd, hMenu);
 
