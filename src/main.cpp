@@ -153,9 +153,10 @@ LRESULT CALLBACK PreviewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             HDC hdc = BeginPaint(hwnd, &ps);
             if (hPreviewBitmap) {
                 HDC memDC = CreateCompatibleDC(hdc);
-                HGDIOBJ old = SelectObject(memDC, hPreviewBitmap);
-                BitBlt(hdc, 0, 0, 800, 1100, memDC, 0, 0, SRCCOPY);
-                SelectObject(memDC, old);
+                SelectObject(memDC, hPreviewBitmap);
+                BITMAP bmp;
+                GetObject(hPreviewBitmap, sizeof(BITMAP), &bmp);
+                BitBlt(hdc, 0, 0, bmp.bmWidth, bmp.bmHeight, memDC, 0, 0, SRCCOPY);
                 DeleteDC(memDC);
             }
             EndPaint(hwnd, &ps);
@@ -183,50 +184,59 @@ void GeneratePrintPreview(HWND hEdit, HDC targetDC) {
 
 
 void ShowPrintPreview(HWND hwndParent, HWND hEdit) {
-    // Get text length
-    int length = GetWindowTextLength(hEdit);
-    if (length == 0) return;
+    const int width = 850;
+    const int height = 1100;
 
-    // Get text content
-    std::wstring text(length, L'\0');
-    GetWindowText(hEdit, &text[0], length + 1);
+    // Clean up previous bitmap if exists
+    if (hPreviewBitmap) DeleteObject(hPreviewBitmap);
 
-    // Create a memory DC and compatible bitmap
     HDC hdcScreen = GetDC(hwndParent);
     HDC hdcMem = CreateCompatibleDC(hdcScreen);
-    HBITMAP hBitmap = CreateCompatibleBitmap(hdcScreen, 800, 1000);
-    SelectObject(hdcMem, hBitmap);
+    hPreviewBitmap = CreateCompatibleBitmap(hdcScreen, width, height);
+    SelectObject(hdcMem, hPreviewBitmap);
 
-    // Set white background
-    RECT rect = { 0, 0, 800, 1000 };
+    RECT rect = { 0, 0, width, height };
     FillRect(hdcMem, &rect, (HBRUSH)(COLOR_WINDOW + 1));
 
-    // Set up FORMAT RANGE for preview rendering
+    SetMapMode(hdcMem, MM_TWIPS);
+
     FORMATRANGE fr = {};
     fr.hdc = hdcMem;
     fr.hdcTarget = hdcMem;
-    fr.rcPage = { 0, 0, 1440 * 8, 1440 * 10 }; // TWIPS
-    fr.rc = { 180, 180, 1440 * 7, 1440 * 9 };  // 1.25" margin
+    fr.rcPage = { 0, 0, width * 20, height * 20 };  // TWIPS (approx 1px = 20 twips)
+    fr.rc = { 1440, 1440, fr.rcPage.right - 1440, fr.rcPage.bottom - 1440 };  // 1" margins
     fr.chrg.cpMin = 0;
     fr.chrg.cpMax = -1;
 
-    SetMapMode(hdcMem, MM_TWIPS);
     SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
     SendMessage(hEdit, EM_FORMATRANGE, FALSE, 0);
-
-    // Create preview window
-    HWND hPreview = CreateWindowEx(WS_EX_CLIENTEDGE, L"STATIC", L"", WS_POPUP | WS_VISIBLE | SS_BITMAP,
-                                   100, 100, 800, 1000, hwndParent, nullptr, nullptr, nullptr);
-    SendMessage(hPreview, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
-
-    // Let user view preview
-    MessageBox(hwndParent, L"Close this preview to return.", L"Print Preview", MB_OK);
-    DestroyWindow(hPreview);
-
-    // Cleanup
-    DeleteObject(hBitmap);
     DeleteDC(hdcMem);
     ReleaseDC(hwndParent, hdcScreen);
+
+    // Register preview class if not already
+    static bool registered = false;
+    if (!registered) {
+        WNDCLASS wc = {};
+        wc.lpfnWndProc = PreviewWndProc;
+        wc.hInstance = GetModuleHandle(nullptr);
+        wc.lpszClassName = L"PreviewWindow";
+        RegisterClass(&wc);
+        registered = true;
+    }
+
+    HWND hPreviewWnd = CreateWindowEx(
+        WS_EX_CLIENTEDGE, L"PreviewWindow", L"Print Preview",
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+        100, 100, width + 16, height + 60,
+        hwndParent, nullptr, nullptr, nullptr
+    );
+
+    // Message loop for preview window
+    MSG msg;
+    while (IsWindow(hPreviewWnd) && GetMessage(&msg, nullptr, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
