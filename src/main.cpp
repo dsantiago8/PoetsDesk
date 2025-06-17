@@ -10,10 +10,11 @@
 #include <chrono>
 #include <sstream>
 #include <wchar.h> 
+#include <algorithm>
+using std::min;
 
 #pragma comment(lib, "Msftedit.lib")
-#define UNICODE
-#define _UNICODE
+
 #define ID_FILE_SAVE 3
 #define ID_EDIT_UNDO 3001
 #define ID_EDIT_FONT 2001
@@ -41,6 +42,7 @@
 #pragma comment(lib, "comdlg32.lib")
 
 // Global declarations
+
 HBITMAP hPreviewBitmap; 
 HWND hStatusBar;
 HWND hEdit;
@@ -153,15 +155,16 @@ LRESULT CALLBACK PreviewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             HDC hdc = BeginPaint(hwnd, &ps);
             if (hPreviewBitmap) {
                 HDC memDC = CreateCompatibleDC(hdc);
-                SelectObject(memDC, hPreviewBitmap);
+                HBITMAP old = (HBITMAP)SelectObject(memDC, hPreviewBitmap);
                 BITMAP bmp;
                 GetObject(hPreviewBitmap, sizeof(BITMAP), &bmp);
                 BitBlt(hdc, 0, 0, bmp.bmWidth, bmp.bmHeight, memDC, 0, 0, SRCCOPY);
+                SelectObject(memDC, old);
                 DeleteDC(memDC);
             }
             EndPaint(hwnd, &ps);
             return 0;
-        }
+        }        
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
@@ -187,51 +190,143 @@ void ShowPrintPreview(HWND hwndParent, HWND hEdit) {
     const int width = 850;
     const int height = 1100;
 
-    // Clean up previous bitmap if exists
-    if (hPreviewBitmap) DeleteObject(hPreviewBitmap);
-
+    // Get screen DC for compatibility
     HDC hdcScreen = GetDC(hwndParent);
     HDC hdcMem = CreateCompatibleDC(hdcScreen);
+
+    // Create the bitmap and select it into memory DC
+    if (hPreviewBitmap) DeleteObject(hPreviewBitmap);
     hPreviewBitmap = CreateCompatibleBitmap(hdcScreen, width, height);
-    SelectObject(hdcMem, hPreviewBitmap);
+    HBITMAP oldBitmap = (HBITMAP)SelectObject(hdcMem, hPreviewBitmap);
 
+    // White background
     RECT rect = { 0, 0, width, height };
-    FillRect(hdcMem, &rect, (HBRUSH)(COLOR_WINDOW + 1));
+    FillRect(hdcMem, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-    SetMapMode(hdcMem, MM_TWIPS);
+    // DON'T set mapping mode here - work in pixels first
+    // SetMapMode(hdcMem, MM_TWIPS); // Remove this line
 
+    // Calculate scaling from twips to pixels
+    int dpiX = GetDeviceCaps(hdcScreen, LOGPIXELSX);
+    int dpiY = GetDeviceCaps(hdcScreen, LOGPIXELSY);
+    
+    // Page dimensions in twips (8.5 x 11 inches)
+    int pageWidthTwips = 8.5 * 1440;   // 12240 twips
+    int pageHeightTwips = 11 * 1440;   // 15840 twips
+    
+    // Margin in twips (1 inch)
+    int marginTwips = 1440;
+    
+    // Convert to pixels for our preview
+    int pageWidthPixels = (pageWidthTwips * dpiX) / 1440;
+    int pageHeightPixels = (pageHeightTwips * dpiY) / 1440;
+    int marginPixels = (marginTwips * dpiX) / 1440;
+    
+    // Scale to fit in our preview window
+    double scaleX = (double)width / pageWidthPixels;
+    double scaleY = (double)height / pageHeightPixels;
+    double scale = min(scaleX, scaleY);
+    
+    int scaledWidth = (int)(pageWidthPixels * scale);
+    int scaledHeight = (int)(pageHeightPixels * scale);
+    int scaledMargin = (int)(marginPixels * scale);
+    
+    // Center the page in the preview
+    int offsetX = (width - scaledWidth) / 2;
+    int offsetY = (height - scaledHeight) / 2;
+
+    // Draw page border
+    HPEN pen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+    HPEN oldPen = (HPEN)SelectObject(hdcMem, pen);
+    HBRUSH oldBrush = (HBRUSH)SelectObject(hdcMem, GetStockObject(NULL_BRUSH));
+    Rectangle(hdcMem, offsetX, offsetY, offsetX + scaledWidth, offsetY + scaledHeight);
+    SelectObject(hdcMem, oldPen);
+    SelectObject(hdcMem, oldBrush);
+    DeleteObject(pen);
+
+    // Now set up for RichEdit formatting - use a separate DC with TWIPS
+    HDC hdcFormat = CreateCompatibleDC(hdcScreen);
+    SetMapMode(hdcFormat, MM_TWIPS);
+    
+    // Set viewport to match our scaled preview area
+    SetViewportOrgEx(hdcFormat, offsetX + scaledMargin, offsetY + scaledMargin, NULL);
+    SetViewportExtEx(hdcFormat, scaledWidth - 2 * scaledMargin, scaledHeight - 2 * scaledMargin, NULL);
+    SetWindowExtEx(hdcFormat, pageWidthTwips - 2 * marginTwips, pageHeightTwips - 2 * marginTwips, NULL);
+    
+    // Set up format range
     FORMATRANGE fr = {};
-    fr.hdc = hdcMem;
-    fr.hdcTarget = hdcMem;
-    fr.rcPage = { 0, 0, width * 20, height * 20 };  // TWIPS (approx 1px = 20 twips)
-    fr.rc = { 1440, 1440, fr.rcPage.right - 1440, fr.rcPage.bottom - 1440 };  // 1" margins
+    fr.hdc = hdcMem;        // Render to our bitmap
+    fr.hdcTarget = hdcFormat; // Use format DC for measurements
+    
+    // Page and content rectangles in twips
+    fr.rcPage.left = 0;
+    fr.rcPage.top = 0;
+    fr.rcPage.right = pageWidthTwips;
+    fr.rcPage.bottom = pageHeightTwips;
+    
+    fr.rc.left = marginTwips;
+    fr.rc.top = marginTwips;
+    fr.rc.right = pageWidthTwips - marginTwips;
+    fr.rc.bottom = pageHeightTwips - marginTwips;
+    
     fr.chrg.cpMin = 0;
     fr.chrg.cpMax = -1;
 
-    SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
+    // Check if there's actually text to render
+    int textLength = GetWindowTextLength(hEdit);
+    if (textLength == 0) {
+        // Draw "No content" message
+        SetBkMode(hdcMem, TRANSPARENT);
+        SetTextColor(hdcMem, RGB(128, 128, 128));
+        RECT textRect = { offsetX + scaledMargin, offsetY + scaledMargin, 
+                         offsetX + scaledWidth - scaledMargin, offsetY + scaledHeight - scaledMargin };
+        DrawText(hdcMem, L"No content to preview", -1, &textRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    } else {
+        // Render the actual content
+        LONG result = SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
+        
+        // Debug: Check if anything was rendered
+        if (result <= 0) {
+            SetBkMode(hdcMem, TRANSPARENT);
+            SetTextColor(hdcMem, RGB(255, 0, 0));
+            RECT textRect = { offsetX + scaledMargin, offsetY + scaledMargin, 
+                             offsetX + scaledWidth - scaledMargin, offsetY + scaledHeight - scaledMargin };
+            DrawText(hdcMem, L"Rendering failed", -1, &textRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        }
+    }
+    
+    // Clean up
     SendMessage(hEdit, EM_FORMATRANGE, FALSE, 0);
+    DeleteDC(hdcFormat);
+    SelectObject(hdcMem, oldBitmap);
     DeleteDC(hdcMem);
     ReleaseDC(hwndParent, hdcScreen);
 
-    // Register preview class if not already
+    // Register window class for preview if needed
     static bool registered = false;
     if (!registered) {
         WNDCLASS wc = {};
         wc.lpfnWndProc = PreviewWndProc;
         wc.hInstance = GetModuleHandle(nullptr);
         wc.lpszClassName = L"PreviewWindow";
+        wc.hbrBackground = (HBRUSH)(COLOR_APPWORKSPACE + 1);
         RegisterClass(&wc);
         registered = true;
     }
 
+    // Create the preview window
     HWND hPreviewWnd = CreateWindowEx(
         WS_EX_CLIENTEDGE, L"PreviewWindow", L"Print Preview",
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-        100, 100, width + 16, height + 60,
-        hwndParent, nullptr, nullptr, nullptr
+        100, 100, width + 32, height + 80,  // Account for window borders
+        hwndParent, nullptr, GetModuleHandle(nullptr), nullptr
     );
 
-    // Message loop for preview window
+    // Force a repaint
+    InvalidateRect(hPreviewWnd, nullptr, TRUE);
+    UpdateWindow(hPreviewWnd);
+
+    // Simple modal loop
     MSG msg;
     while (IsWindow(hPreviewWnd) && GetMessage(&msg, nullptr, 0, 0)) {
         TranslateMessage(&msg);
@@ -609,6 +704,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     SendMessage(hEdit, EM_SETLANGOPTIONS, 0, IMF_SPELLCHECKING | IMF_AUTOCORRECT);
     SendMessage(hEdit, EM_SETEVENTMASK, 0, ENM_CHANGE | ENM_SELCHANGE);
     SendMessage(hEdit, EM_SETTARGETDEVICE, (WPARAM)nullptr, 0);
+    SendMessage(hEdit, EM_SETTEXTMODE, TM_PLAINTEXT, 0); // Ensure RichEdit isn't in RTF mode
+
 
 
     MSG msg = {};
