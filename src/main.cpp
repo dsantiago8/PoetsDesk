@@ -18,6 +18,7 @@ using std::min;
 #include <vector>
 #include <string>
 #include <locale>
+#include <codecvt>
 
 #pragma comment(lib, "Msftedit.lib")
 
@@ -59,10 +60,15 @@ LOGFONT lf = {};
 void SaveAsPDF(HWND hwndParent, HWND hEdit);
 HWND hSavePDFButton;  // Global handle for the button
 
-void LoadRhymeDictionary(const std::wstring& filename) {
-    std::wifstream file(filename);
-    file.imbue(std::locale("")); // enable Unicode reading
-    if (!file.is_open()) return;
+void LoadRhymeDictionary() {
+    std::wifstream file;
+    file.imbue(std::locale("")); // Enable Unicode locale
+    file.open("rhyme_dictionary.txt");
+
+    if (!file.is_open()) {
+        MessageBoxW(NULL, L"Failed to open rhyme dictionary.", L"Error", MB_OK | MB_ICONERROR);
+        return;
+    }
 
     std::wstring line;
     while (std::getline(file, line)) {
@@ -100,6 +106,45 @@ std::wstring GetLastWord(const std::wstring& line) {
 
     size_t start = line.find_last_of(L" \t\n\r", end);
     return line.substr((start == std::wstring::npos) ? 0 : start + 1, end - start);
+}
+
+void ShowRhymes(HWND hwnd, const std::vector<std::wstring>& rhymes) {
+    std::wstring message = L"Rhymes:\n";
+    for (const auto& word : rhymes) {
+        message += L"• " + word + L"\n";
+    }
+
+    MessageBox(hwnd, message.c_str(), L"Rhyme Suggestions", MB_OK | MB_ICONINFORMATION);
+}
+
+void ShowRhymesForCurrentLine(HWND hwnd, HWND hEdit) {
+    DWORD selStart = 0;
+    SendMessage(hEdit, EM_GETSEL, (WPARAM)&selStart, (LPARAM)nullptr);
+
+    TEXTRANGEW tr = {};
+    wchar_t buffer[2048] = {};
+    tr.chrg.cpMin = 0;
+    tr.chrg.cpMax = selStart;
+    tr.lpstrText = buffer;
+    SendMessage(hEdit, EM_GETTEXTRANGE, 0, (LPARAM)&tr);
+
+    std::wstring textUpToCursor = buffer;
+    size_t lastNewline = textUpToCursor.find_last_of(L"\r\n");
+    std::wstring currentLine = (lastNewline != std::wstring::npos) ?
+        textUpToCursor.substr(lastNewline + 1) : textUpToCursor;
+
+    std::wstring lastWord = GetLastWord(currentLine);
+
+    if (!lastWord.empty()) {
+        auto it = rhymeDict.find(lastWord);
+        if (it != rhymeDict.end() && !it->second.empty()) {
+            ShowRhymes(hwnd, it->second);
+        } else {
+            MessageBox(hwnd, L"No rhymes found.", L"Rhyme Suggestions", MB_OK | MB_ICONINFORMATION);
+        }
+    } else {
+        MessageBox(hwnd, L"No word found.", L"Rhyme Suggestions", MB_OK | MB_ICONWARNING);
+    }
 }
 
 
@@ -552,6 +597,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                 }
             }
+            if (wParam == 'R' && (GetKeyState(VK_CONTROL) & 0x8000)) {
+                ShowRhymesForCurrentLine(hwnd, hEdit);
+            }
             break;
         }        
         case WM_CLOSE:
@@ -833,7 +881,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
-    LoadRhymeDictionary(L"rhyme_dictionary.txt");
+    LoadRhymeDictionary();
     InitCommonControls();
     
     ACCEL accelTable[] = {

@@ -1,0 +1,10 @@
+night: bright, flight, height, light, might, right, sight, tight
+day: bay, clay, fray, gray, hay, may, play, say, way
+blue: clue, due, flew, glue, knew, new, shoe, true, you
+fire: dire, entire, higher, inspire, liar, quire, require, sire, wire
+love: above, dove, glove, of, shove
+time: chime, climb, crime, dime, mime, prime, rhyme, slime
+rain: brain, chain, drain, gain, main, pain, plain, strain, train
+stone: alone, bone, cone, drone, groan, loan, moan, own, tone
+cold: bold, fold, gold, hold, mold, old, scold, told
+wind: binned, chinned, grinned, pinned, rescinded, skinned, thinned
