@@ -62,10 +62,8 @@ HWND hSavePDFButton;  // Global handle for the button
 
 void LoadRhymeDictionary(const std::string& filename) {
     std::ifstream file(filename);  // Use narrow string
-    file.imbue(std::locale("en_US.UTF-8")); // Optional if UTF-8 content
-
     if (!file.is_open()) {
-        MessageBoxA(NULL, "Failed to open rhyme_dictionary.txt", "Error", MB_OK | MB_ICONERROR);
+        throw std::runtime_error("Failed to open rhyme_dictionary.txt.");
         return;
     }
 
@@ -601,7 +599,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                 }
             }
-            if (wParam == 'R' && (GetKeyState(VK_CONTROL) & 0x8000)) {
+            else if (wParam == 'R' && (GetKeyState(VK_CONTROL) & 0x8000)) {
                 ShowRhymesForCurrentLine(hwnd, hEdit);
             }
             break;
