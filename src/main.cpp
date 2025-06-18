@@ -597,10 +597,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         SendMessage(hwnd, WM_COMMAND, 3, 0); // simulate Save menu click
                         return 0;
                     }
+                    case 'R': {
+                        ShowRhymesForCurrentLine(hwnd, hEdit);
+                        return 0;
+                    }
                 }
-            }
-            else if (wParam == 'R' && (GetKeyState(VK_CONTROL) & 0x8000)) {
-                ShowRhymesForCurrentLine(hwnd, hEdit);
             }
             break;
         }        
@@ -717,6 +718,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     UpdateWindowTitle(hwnd);
                     break;
                 }   
+                case 1004: { // Ctrl+R for rhymes
+                    ShowRhymesForCurrentLine(hwnd, hEdit);
+                    break;
+                }
                 case 2: { // Open
                     if (!ConfirmDiscardChanges(hwnd)) break;
                     ofn.lStructSize = sizeof(ofn);
@@ -889,6 +894,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     ACCEL accelTable[] = {
         { FCONTROL | FVIRTKEY, 'S', ID_FILE_SAVE },
         { FCONTROL | FVIRTKEY, 'Z', ID_EDIT_UNDO },
+        { FCONTROL | FVIRTKEY, 'R', 1004 },
     };
     
     HACCEL hAccel = CreateAcceleratorTable(accelTable, 2);
