@@ -12,6 +12,12 @@
 #include <wchar.h> 
 #include <algorithm>
 using std::min;
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <string>
+#include <locale>
 
 #pragma comment(lib, "Msftedit.lib")
 
@@ -43,6 +49,7 @@ using std::min;
 
 // Global declarations
 
+std::map<std::wstring, std::vector<std::wstring>> rhymeDict;
 HBITMAP hPreviewBitmap; 
 HWND hStatusBar;
 HWND hEdit;
@@ -51,6 +58,49 @@ HFONT hFont = nullptr;
 LOGFONT lf = {};
 void SaveAsPDF(HWND hwndParent, HWND hEdit);
 HWND hSavePDFButton;  // Global handle for the button
+
+void LoadRhymeDictionary(const std::wstring& filename) {
+    std::wifstream file(filename);
+    file.imbue(std::locale("")); // enable Unicode reading
+    if (!file.is_open()) return;
+
+    std::wstring line;
+    while (std::getline(file, line)) {
+        size_t colon = line.find(L':');
+        if (colon == std::wstring::npos) continue;
+
+        std::wstring key = line.substr(0, colon);
+        std::wstring rest = line.substr(colon + 1);
+
+        std::wstringstream ss(rest);
+        std::wstring rhyme;
+        std::vector<std::wstring> rhymes;
+        while (std::getline(ss, rhyme, L',')) {
+            size_t first = rhyme.find_first_not_of(L" \t");
+            size_t last = rhyme.find_last_not_of(L" \t");
+            if (first != std::wstring::npos && last != std::wstring::npos)
+                rhymes.push_back(rhyme.substr(first, last - first + 1));
+        }
+
+        rhymeDict[key] = rhymes;
+    }
+
+    file.close();
+}
+
+std::vector<std::wstring> GetRhymes(const std::wstring& word) {
+    auto it = rhymeDict.find(word);
+    if (it != rhymeDict.end()) return it->second;
+    return {};
+}
+
+std::wstring GetLastWord(const std::wstring& line) {
+    size_t end = line.find_last_not_of(L" \t\n\r");
+    if (end == std::wstring::npos) return L"";
+
+    size_t start = line.find_last_of(L" \t\n\r", end);
+    return line.substr((start == std::wstring::npos) ? 0 : start + 1, end - start);
+}
 
 
 // Function: Counts syllables
@@ -783,6 +833,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
+    LoadRhymeDictionary(L"rhyme_dictionary.txt");
     InitCommonControls();
     
     ACCEL accelTable[] = {
