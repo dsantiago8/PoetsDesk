@@ -49,6 +49,8 @@ HWND hEdit;
 bool isModified = false;
 HFONT hFont = nullptr;
 LOGFONT lf = {};
+void SaveAsPDF(HWND hwndParent, HWND hEdit);
+HWND hSavePDFButton;  // Global handle for the button
 
 
 // Function: Counts syllables
@@ -150,6 +152,29 @@ void UpdateStatusBar() {
 
 LRESULT CALLBACK PreviewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
+        case WM_CREATE: {
+            // Create "Save as PDF" button
+            hSavePDFButton = CreateWindow(
+                L"BUTTON", L"Save as PDF",
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                10, 10, 100, 30,
+                hwnd, (HMENU)1001, GetModuleHandle(nullptr), nullptr
+            );
+            return 0;
+        }
+        case WM_COMMAND: {
+            if (LOWORD(wParam) == 1001) { // Save as PDF button clicked
+                SaveAsPDF(hwnd, hEdit);
+            }
+            return 0;
+        }
+        case WM_SIZE: {
+            // Reposition button when window is resized
+            if (hSavePDFButton) {
+                MoveWindow(hSavePDFButton, 10, 10, 100, 30, TRUE);
+            }
+            return 0;
+        }
         case WM_PAINT: {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
@@ -158,7 +183,10 @@ LRESULT CALLBACK PreviewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 HBITMAP old = (HBITMAP)SelectObject(memDC, hPreviewBitmap);
                 BITMAP bmp;
                 GetObject(hPreviewBitmap, sizeof(BITMAP), &bmp);
-                BitBlt(hdc, 0, 0, bmp.bmWidth, bmp.bmHeight, memDC, 0, 0, SRCCOPY);
+                
+                // Offset the bitmap to account for the button area
+                BitBlt(hdc, 0, 50, bmp.bmWidth, bmp.bmHeight, memDC, 0, 0, SRCCOPY);
+                
                 SelectObject(memDC, old);
                 DeleteDC(memDC);
             }
@@ -166,6 +194,8 @@ LRESULT CALLBACK PreviewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             return 0;
         }        
         case WM_DESTROY:
+            // Don't call PostQuitMessage - just let the window close
+            // The message loop in ShowPrintPreview will exit when IsWindow returns false
             return 0;
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -224,7 +254,7 @@ void ShowPrintPreview(HWND hwndParent, HWND hEdit) {
     // Scale to fit in our preview window
     double scaleX = (double)width / pageWidthPixels;
     double scaleY = (double)height / pageHeightPixels;
-    double scale = min(scaleX, scaleY);
+    double scale = std::min(scaleX, scaleY);
     
     int scaledWidth = (int)(pageWidthPixels * scale);
     int scaledHeight = (int)(pageHeightPixels * scale);
@@ -317,7 +347,7 @@ void ShowPrintPreview(HWND hwndParent, HWND hEdit) {
     HWND hPreviewWnd = CreateWindowEx(
         WS_EX_CLIENTEDGE, L"PreviewWindow", L"Print Preview",
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-        100, 100, width + 32, height + 80,  // Account for window borders
+        100, 100, width + 32, height + 130,  // Extra height for button
         hwndParent, nullptr, GetModuleHandle(nullptr), nullptr
     );
 
@@ -330,6 +360,134 @@ void ShowPrintPreview(HWND hwndParent, HWND hEdit) {
     while (IsWindow(hPreviewWnd) && GetMessage(&msg, nullptr, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+    }
+}
+
+void SaveAsPDF(HWND hwndParent, HWND hEdit) {
+    // Open file dialog to get PDF save location
+    OPENFILENAME ofn = {};
+    TCHAR szFile[MAX_PATH] = TEXT("");
+    
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hwndParent;
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrFilter = TEXT("PDF Files (*.pdf)\0*.pdf\0All Files\0*.*\0");
+    ofn.nFilterIndex = 1;
+    ofn.lpstrDefExt = TEXT("pdf");
+    ofn.Flags = OFN_OVERWRITEPROMPT;
+    
+    if (GetSaveFileName(&ofn)) {
+        // Create a device context for "Microsoft Print to PDF"
+        HDC hPrinterDC = CreateDC(L"WINSPOOL", L"Microsoft Print to PDF", nullptr, nullptr);
+        
+        if (!hPrinterDC) {
+            MessageBox(hwndParent, 
+                L"Microsoft Print to PDF printer not found.\n\n"
+                L"Please install Microsoft Print to PDF or use File -> Print and select a PDF printer manually.",
+                L"PDF Export", MB_OK | MB_ICONWARNING);
+            return;
+        }
+        
+        // Show a message about the PDF save location
+        wchar_t message[512];
+        _snwprintf(message, 512, 
+            L"PDF will be saved to:\n%s\n\n"
+            L"Click OK to continue with PDF generation.",
+            szFile);
+        
+        int result = MessageBox(hwndParent, message, L"Save as PDF", MB_OKCANCEL | MB_ICONINFORMATION);
+        if (result != IDOK) {
+            DeleteDC(hPrinterDC);
+            return;
+        }
+        
+        // Set up document info
+        DOCINFO di = {};
+        di.cbSize = sizeof(di);
+        di.lpszDocName = L"Poem";
+        di.lpszOutput = szFile;  // This tells the PDF printer where to save
+        
+        if (StartDoc(hPrinterDC, &di) > 0) {
+            // Get printer capabilities
+            int physicalWidth = GetDeviceCaps(hPrinterDC, PHYSICALWIDTH);
+            int physicalHeight = GetDeviceCaps(hPrinterDC, PHYSICALHEIGHT);
+            int logPixelsX = GetDeviceCaps(hPrinterDC, LOGPIXELSX);
+            int logPixelsY = GetDeviceCaps(hPrinterDC, LOGPIXELSY);
+            
+            // Convert to twips (1 inch = 1440 twips)
+            int pageWidthTwips = (physicalWidth * 1440) / logPixelsX;
+            int pageHeightTwips = (physicalHeight * 1440) / logPixelsY;
+            
+            // 1 inch margins in twips
+            int marginTwips = 1440;
+            
+            FORMATRANGE fr = {};
+            fr.hdc = hPrinterDC;
+            fr.hdcTarget = hPrinterDC;
+            
+            // Set up page rectangle (entire page)
+            fr.rcPage.left = 0;
+            fr.rcPage.top = 0;
+            fr.rcPage.right = pageWidthTwips;
+            fr.rcPage.bottom = pageHeightTwips;
+            
+            // Set up content rectangle (with margins)
+            fr.rc.left = marginTwips;
+            fr.rc.top = marginTwips;
+            fr.rc.right = pageWidthTwips - marginTwips;
+            fr.rc.bottom = pageHeightTwips - marginTwips;
+            
+            // Character range - render all text
+            fr.chrg.cpMin = 0;
+            fr.chrg.cpMax = -1;
+            
+            // DON'T set mapping mode - let RichEdit handle the coordinate system
+            // SetMapMode(hPrinterDC, MM_TWIPS); // Remove this line
+            
+            // Check if there's text to render
+            int textLength = GetWindowTextLength(hEdit);
+            if (textLength == 0) {
+                MessageBox(hwndParent, L"No text to save as PDF.", L"Save as PDF", MB_OK | MB_ICONWARNING);
+                EndDoc(hPrinterDC);
+                DeleteDC(hPrinterDC);
+                return;
+            }
+            
+            // Render pages
+            LONG nextChar = 0;
+            int pageCount = 0;
+            
+            do {
+                StartPage(hPrinterDC);
+                pageCount++;
+                
+                fr.chrg.cpMin = nextChar;
+                fr.chrg.cpMax = -1; // To end of text
+                
+                nextChar = SendMessage(hEdit, EM_FORMATRANGE, TRUE, (LPARAM)&fr);
+                
+                EndPage(hPrinterDC);
+                
+                // Break if no more characters to render
+                if (nextChar == -1 || nextChar <= fr.chrg.cpMin) {
+                    break;
+                }
+                
+            } while (nextChar > 0 && nextChar < textLength);
+            
+            EndDoc(hPrinterDC);
+            
+            wchar_t successMsg[256];
+            _snwprintf(successMsg, 256, L"PDF saved successfully!\n\nPages: %d\nLocation: %s", pageCount, szFile);
+            MessageBox(hwndParent, successMsg, L"Save as PDF", MB_OK | MB_ICONINFORMATION);
+        } else {
+            MessageBox(hwndParent, L"Failed to start PDF document.", L"Error", MB_OK | MB_ICONERROR);
+        }
+        
+        // Clean up
+        SendMessage(hEdit, EM_FORMATRANGE, FALSE, 0);
+        DeleteDC(hPrinterDC);
     }
 }
 
