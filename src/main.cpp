@@ -60,39 +60,43 @@ LOGFONT lf = {};
 void SaveAsPDF(HWND hwndParent, HWND hEdit);
 HWND hSavePDFButton;  // Global handle for the button
 
-void LoadRhymeDictionary() {
-    std::wifstream file;
-    file.imbue(std::locale("")); // Enable Unicode locale
-    file.open("rhyme_dictionary.txt");
+void LoadRhymeDictionary(const std::string& filename) {
+    std::ifstream file(filename);  // Use narrow string
+    file.imbue(std::locale("en_US.UTF-8")); // Optional if UTF-8 content
 
     if (!file.is_open()) {
-        MessageBoxW(NULL, L"Failed to open rhyme dictionary.", L"Error", MB_OK | MB_ICONERROR);
+        MessageBoxA(NULL, "Failed to open rhyme_dictionary.txt", "Error", MB_OK | MB_ICONERROR);
         return;
     }
 
-    std::wstring line;
+    std::string line;
     while (std::getline(file, line)) {
-        size_t colon = line.find(L':');
-        if (colon == std::wstring::npos) continue;
+        size_t colon = line.find(':');
+        if (colon == std::string::npos) continue;
 
-        std::wstring key = line.substr(0, colon);
-        std::wstring rest = line.substr(colon + 1);
+        std::string key = line.substr(0, colon);
+        std::string rest = line.substr(colon + 1);
 
-        std::wstringstream ss(rest);
-        std::wstring rhyme;
+        std::stringstream ss(rest);
+        std::string rhyme;
         std::vector<std::wstring> rhymes;
-        while (std::getline(ss, rhyme, L',')) {
-            size_t first = rhyme.find_first_not_of(L" \t");
-            size_t last = rhyme.find_last_not_of(L" \t");
-            if (first != std::wstring::npos && last != std::wstring::npos)
-                rhymes.push_back(rhyme.substr(first, last - first + 1));
+
+        while (std::getline(ss, rhyme, ',')) {
+            size_t first = rhyme.find_first_not_of(" \t");
+            size_t last = rhyme.find_last_not_of(" \t");
+            if (first != std::string::npos && last != std::string::npos) {
+                std::wstring wideRhyme(rhyme.begin() + first, rhyme.begin() + last + 1);
+                rhymes.push_back(wideRhyme);
+            }
         }
 
-        rhymeDict[key] = rhymes;
+        std::wstring wideKey(key.begin(), key.end());
+        rhymeDict[wideKey] = rhymes;
     }
 
     file.close();
 }
+
 
 std::vector<std::wstring> GetRhymes(const std::wstring& word) {
     auto it = rhymeDict.find(word);
@@ -881,7 +885,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
-    LoadRhymeDictionary();
+    LoadRhymeDictionary("rhyme_dictionary.txt");
     InitCommonControls();
     
     ACCEL accelTable[] = {
