@@ -897,7 +897,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
         { FCONTROL | FVIRTKEY, 'R', 1004 },
     };
     
-    HACCEL hAccel = CreateAcceleratorTable(accelTable, 2);
+    HACCEL hAccel = CreateAcceleratorTable(accelTable, 3);
     LPCTSTR CLASS_NAME = TEXT("PoetsDeskWindowClass");
 
     WNDCLASS wc = {};
