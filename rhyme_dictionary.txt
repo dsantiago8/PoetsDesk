@@ -53,7 +53,7 @@ writing: fighting, biting, lighting, sighting, inviting, delighting, exciting, i
 cooking: looking, booking, hooking, brooking, rooking, overlooking
 sleeping: keeping, leaping, weeping, sweeping, creeping, seeping, reaping, heaping, steeping
 laughing: graphing, staffing, chaffing, paragraph, telegraph, autograph, epitaph, phonograph
-crying: trying, flying, drying, frying, lying, dying, buying, sighing, spying, relying, replying, supplying, denying, complying, occupying, satisfying, qualifying, terrifying, modifying, classifying
+crying: trying, flying, drying, frying, lying, dying, buying, sighing, spying, relying, replying, supplying, denying, complying, occupying, satisfying, qualifying, terrifying, modifying, classifying, morning
 loving: shoving, gloving, above, pushing, enough, rough, tough, stuff, bluff, cuff, huff, puff, snuff, scuff, buff
 thinking: drinking, sinking, winking, linking, shrinking, blinking, twinkling, crinkling, sprinkling
 feeling: healing, dealing, sealing, peeling, reeling, stealing, revealing, appealing, concealing, kneeling, squealing, wheeling
