@@ -12,10 +12,10 @@ heart: art, part, start, cart, dart, chart, smart, apart, depart, impart, sweeth
 mind: kind, find, blind, bind, wind, behind, remind, refined, defined, combined, designed, assigned, resigned, mankind, confined, inclined, outlined, declined, intertwined, unwind
 soul: goal, role, whole, hole, pole, bowl, roll, toll, coal, foal, mole, stole, control, patrol, enroll, console, parole, cajole, payroll, protocol, buttonhole, casserole
 dream: cream, team, stream, beam, gleam, seem, theme, scheme, extreme, supreme, esteem, redeem, sunbeam, mainstream, downstream, upstream, ice cream, daydream, moonbeam
-hope: rope, cope, slope, scope, pope, mope,elope, grope, envelope, telescope, microscope, horoscope, antelope, cantaloupe, philanthrope, misanthrope
+hope: rope, cope, slope, scope, pope, mope, elope, grope, envelope, telescope, microscope, horoscope, antelope, cantaloupe, philanthrope, misanthrope
 peace: cease, piece, lease, geese, fleece, crease, grease, increase, decrease, release, police, caprice, masterpiece, centerpiece, nephew, niece
 moon: soon, tune, june, spoon, noon, croon, swoon, balloon, cartoon, raccoon, baboon, maroon, lagoon, typhoon, monsoon, honeymoon, afternoon, immune, commune, fortune
-star: far, car, bar, jar, tar, scar, guitar, bizarre, cigar, radar, avatar, caviar, reservoir, repertoire, jaguar, seminar,icular, popular, similar, familiar
+star: far, car, bar, jar, tar, scar, guitar, bizarre, cigar, radar, avatar, caviar, reservoir, repertoire, jaguar, seminar, circular, popular, similar, familiar
 sea: free, tree, key, bee, tea, knee, flee, glee, three, degree, agree, decree, referee, guarantee, employee, absentee, Tennessee, Cherokee, bumble bee, jamboree
 sky: fly, try, cry, dry, fry, high, lie, pie, tie, die, buy, guy, shy, why, eye, sigh, spy, my, by, rely, reply, supply, deny, comply, occupy, satisfy, qualify, terrify, modify, classify
 sun: fun, run, gun, done, won, one, ton, son, nun, bun, pun, stun, begun, undone, someone, everyone, anyone, overdone, outrun, homerun, shotgun
@@ -40,3 +40,96 @@ run: fun, sun, gun, done, won, one, ton, son, nun, bun, pun, stun, begun, undone
 sleep: deep, keep, leap, weep, cheap, heap, steep, sheep, sweep, creep, peep, reap, beep, jeep, asleep, upkeep, doorkeep, shopkeep
 eat: beat, heat, seat, treat, wheat, street, meet, feet, neat, complete, repeat, compete, defeat, retreat, discrete, concrete, athlete, elite, obsolete, bittersweet
 book: look, took, cook, hook, nook, brook, shook, crook, rook, overlook, handbook, notebook, textbook, pocketbook, storybook, yearbook, cookbook
+
+# -ING SUFFIX RHYMES
+singing: bringing, ringing, winging, swinging, stinging, flinging, clinging, springing, stringing
+playing: saying, staying, praying, laying, paying, displaying, delaying, betraying, conveying, relaying, surveying
+running: funning, gunning, stunning, shunning, cunning, punning
+walking: talking, chalking, stalking, balking, hawking, squawking
+dancing: prancing, glancing, lancing, advancing, romancing, enhancing, entrancing, financing
+working: lurking, smirking, shirking, jerking, perking
+reading: leading, feeding, breeding, needing, weeding, seeding, bleeding, pleading, heeding, succeeding, proceeding, exceeding, receding
+writing: fighting, biting, lighting, sighting, inviting, delighting, exciting, igniting, citing, uniting, inciting
+cooking: looking, booking, hooking, brooking, rooking, overlooking
+sleeping: keeping, leaping, weeping, sweeping, creeping, seeping, reaping, heaping, steeping
+laughing: graphing, staffing, chaffing, paragraph, telegraph, autograph, epitaph, phonograph
+crying: trying, flying, drying, frying, lying, dying, buying, sighing, spying, relying, replying, supplying, denying, complying, occupying, satisfying, qualifying, terrifying, modifying, classifying
+loving: shoving, gloving, above, pushing, enough, rough, tough, stuff, bluff, cuff, huff, puff, snuff, scuff, buff
+thinking: drinking, sinking, winking, linking, shrinking, blinking, twinkling, crinkling, sprinkling
+feeling: healing, dealing, sealing, peeling, reeling, stealing, revealing, appealing, concealing, kneeling, squealing, wheeling
+building: gilding, wielding, yielding, shielding, rebuilding
+working: lurking, smirking, shirking, jerking, perking, networking, reworking
+growing: flowing, glowing, knowing, showing, throwing, blowing, rowing, sowing, going, owing, bestowing, following, borrowing, swallowing, hollowing, mellowing, bellowing, wallowing
+being: seeing, freeing, agreeing, decreeing, fleeing, guaranteeing, refereeing
+coming: humming, summing, drumming, plumbing, numbing, thumbing, becoming, overcoming, shortcoming, welcoming
+living: giving, forgiving, thanksgiving, misgiving, unforgiving
+making: taking, waking, baking, breaking, shaking, raking, faking, aching, forsaking, undertaking, breathtaking, painstaking, mistaking, remaking, partaking
+going: flowing, glowing, knowing, showing, throwing, blowing, rowing, sowing, owing, bestowing, following, borrowing, swallowing, hollowing, mellowing, bellowing, wallowing, growing
+moving: proving, improving, removing, approving, disapproving, grooving, soothing
+learning: burning, turning, earning, yearning, churning, spurning, returning, concerning, discerning, overturning
+seeing: being, freeing, agreeing, decreeing, fleeing, guaranteeing, refereeing, sightseeing
+wanting: haunting, taunting, flaunting, daunting, vaunting, hunting, punting, stunting, bunting, fronting, confronting, grunting, shunting
+telling: selling, yelling, spelling, swelling, dwelling, smelling, compelling, repelling, excelling, rebelling, propelling, dispelling, quelling, felling, shelling, welling, compelling
+hearing: fearing, tearing, wearing, bearing, caring, daring, sharing, staring, preparing, comparing, declaring, repairing, swearing, cheering, steering, clearing, appearing, disappearing, endearing, interfering, volunteering, pioneering, engineering, persevering
+asking: basking, tasking, masking, unmasking, multitasking
+helping: yelping, whelping, kelping
+
+# -ED SUFFIX RHYMES
+played: stayed, prayed, laid, paid, displayed, delayed, betrayed, conveyed, relayed, surveyed, weighed, obeyed, swayed, frayed, sprayed, strayed, decayed, portrayed, dismayed, repaid, afraid, arrayed, persuaded, invaded, evaded, paraded, cascaded, upgraded, degraded, blockaded, barricaded
+walked: talked, chalked, stalked, balked, hawked, squawked, locked, blocked, shocked, rocked, knocked, mocked, docked, stocked, flocked, clocked
+danced: pranced, glanced, lanced, advanced, romanced, enhanced, entranced, financed, chanced, balanced
+worked: lurked, smirked, shirked, jerked, perked, marked, parked, barked, harked, sparked, embarked, remarked, disembarked
+lived: gave, shaved, saved, waved, paved, craved, raved, slaved, behaved, engraved, forgave, misbehaved
+loved: shoved, gloved, above, pushed, crushed, rushed, hushed, brushed, flushed, gushed, mushed, blushed
+moved: proved, improved, removed, approved, disapproved, grooved, soothed
+tried: cried, died, lied, tied, fried, dried, spied, sighed, replied, denied, supplied, occupied, satisfied, qualified, terrified, modified, classified, applied, complied, implied, relied, pried, defied, unified, multiplied, simplified, purified, verified, specified, testified, justified, ratified, certified, identified, dignified, signified, magnified, glorified, horrified, liquefied, solidified, personified, diversified, intensified, electrified
+jumped: bumped, pumped, lumped, dumped, humped, thumped, stumped, slumped, trumped
+opened: deepened, cheapened, steepened, happened, sharpened, darkened, shortened, frightened, brightened, tightened, lightened, whitened, threatened, flattened, fattened, saddened, maddened, gladdened, reddened, hardened, softened, sweetened, fastened, listened, glistened, christened, moistened, hastened, awakened, weakened, thickened, sickened, quickened, slackened, blackened, reckoned, beckoned, second, broadened, burdened, pardoned, sharpened, happened, toughened, roughened, lengthened, strengthened
+asked: basked, tasked, masked, unmasked, casked, flasked
+helped: yelped, whelped, kelped
+wanted: haunted, taunted, flaunted, daunted, vaunted, hunted, punted, stunted, bunted, fronted, confronted, grunted, shunted, rented, dented, vented, scented, presented, represented, invented, prevented, resented, consented, tormented, lamented, contented, repented, cemented, fermented, documented, supplemented, implemented, ornamented, experimented, complemented, complimented
+needed: seeded, weeded, heeded, fed, led, wed, read, spread, bred, shed, dread, thread, fled, bled, tread, said, head, bed, dead, instead, ahead, widespread, overhead, misread, unread, widespread, thread, shred, bred, sled, fled, bled, tread, dread, retread, underfed, overfed, purebred, thoroughbred, gingerbread, figurehead, watershed, arrowhead, letterhead, masthead, overhead, warhead, egghead, blockhead, hothead, pinhead, airhead, redhead, flathead, meathead, fathead, hardhead, godhead, ahead, behead, spearhead, newlywed, embed, shred, embed, outspread, homestead, farmstead, bedstead, instead
+started: parted, charted, departed, imparted, smarted, darted, carted, outsmarted, restarted, fainthearted, wholehearted, bighearted, kindhearted, lighthearted, hardhearted, softhearted, sweethearted, openhearted, closehearted, warmhearted, coldhearted, halfhearted, disheartened, uncharted
+learned: burned, turned, earned, yearned, churned, spurned, returned, concerned, discerned, overturned, unturned, unconcerned, stern, tern, fern, modern, pattern, western, eastern, southern, northern, lantern, cistern, extern, intern, sutern
+called: balled, walled, hauled, mauled, crawled, drawled, sprawled, brawled, enthralled, appalled, installed, recalled, forestalled, stalled, palled, scrawled, trawled, yawled, overalled, overhauled, enthralled, blackballed, snowballed, mothballed, football, basketball, baseball, volleyball, softball, meatball, eyeball, fireball, hardball, fastball, curveball, screwball, oddball, puffball, furball, hairball, mothball, spitball, cannonball, snowball, cornball, gumball, pinball, football, doorbell, cowbell, seashell, eggshell, nutshell, bombshell, shotgun shell, turtleshell, snail shell, clam shell, oyster shell, scallop shell, conch shell, caracal shell, abalone shell, mussel shell, cockle shell, periwinkle shell, whelk shell, nautilus shell, conch shell, cowrie shell, limpet shell, chiton shell, clam shell, oyster shell, scallop shell, mussel shell, abalone shell, conch shell, whelk shell, periwinkle shell, cockle shell, cowry shell, limpet shell, chiton shell, spiral shelet shell
+
+# -LY SUFFIX RHYMES
+quickly: thickly, slickly, sickly, prickly, trickly, stickly
+slowly: lowly, holy, solely, wholly, lonely, only, closely, mostly, ghostly, costly, lastly, vastly, justly, firstly, softly, sweetly, neatly, greatly, lately, mately, stately, completely, lately, privately, immediately, ultimately, definitely, absolutely, recently, currently, perfectly, exactly, directly, clearly, really, finally, actually, certainly, probably, possibly, especially, particularly, generally, usually, normally, typically, specifically, basically, simply, easily, quickly, slowly, carefully, safely, seriously, obviously, apparently, naturally, certainly, surely, likely, unlikely, friendly, lovely, lively, deadly, weekly, daily, yearly, monthly, hourly, timely, early, nearly, clearly, dearly, fairly, rarely, barely, squarely, purely, surely, truly, duly, newly, coolly, fully, bully, gully, hilly, silly, frilly, chilly,illy, billy, lily, filly, jelly, belly, kelly, smelly, smelly, telly, delly, nelly, welly, yelly, jelly, kelly, smelly, telly, delly, nelly, welly, yelly
+badly: sadly, madly, gladly, radly, daddy, caddy, paddy, laddy
+sadly: badly, madly, gladly, radly, daddy, caddy, paddy, laddy
+madly: badly, sadly, gladly, radly, daddy, caddy, paddy, laddy
+gladly: badly, sadly, madly, radly, daddy, caddy, paddy, laddy
+gently: recently, intently, urgently, frequently, apparently, evidently, currently, presently, consistently, constantly, silently, violently, efficiently, differently, sufficiently, prominently, permanently, temporarily, immediately, accurately, approximately, unfortunately, consequently, subsequently, independently, respectively, appropriately, significantly
+softly: costly, ghostly, mostly, lastly, vastly, justly, firstly
+sweetly: neatly, greatly, lately, stately, completely, privately, immediately, ultimately, definitely, absolutely, recently, currently, perfectly, exactly, directly, clearly, really, finally, actually, certainly, probably, possibly, especially, particularly, generally, usually, normally, typically, specifically, basically, simply, easily
+friendly: kindly, blindly, fondly, secondly, soundly, roundly, groundly
+lovely: above, shove, dove, glove, of, enough, rough, tough, stuff, bluff, cuff, huff, puff, snuff, scuff, buff
+lively: actively, respectively, effectively, collectively, selectively, respectively, protectively, objectively, subjectively, retrospectively, prospectively, introspectively, reflectively
+deadly: medley, readily, steadily, heavily, readily, family, happily, angrily, hungrily, easily, busily, lazily, crazily, fuzzily, dizzily, merrily, wearily, drearily, cheerily, eerily, clearly, dearly, nearly, yearly, barely, fairly, rarely, squarely, surely, purely, truly, duly, newly, coolly, fully
+weekly: meekly, sleekly, bleakly, weakly, cheeky, sneaky, leaky, creaky, squeaky, freaky, streaky
+daily: gaily, scaly, snaily, palely, stately, lately, greatly, neatly, sweetly, completely, privately, immediately, ultimately, definitely, absolutely, recently, currently, perfectly, exactly, directly, clearly, really, finally, actually, certainly, probably, possibly, especially, particularly, generally, usually, normally, typically, specifically, basically, simply, easily
+yearly: clearly, dearly, nearly, barely, fairly, rarely, squarely, surely, purely, truly, duly, newly, coolly, fully, dearly, sincerely, severely, merely, entirely, completely, precisely, concisely, briefly, chiefly, primarily, mainly, plainly, certainly, earnestly, honestly, modestly, quietly, secretly, privately, lately, remotely, closely, mostly, ghostly, costly, lastly, vastly, justly, firstly, softly, sweetly, neatly, greatly, stately, completely, privately, immediately, ultimately, definitely, absolutely, recently, currently, perfectly, exactly, directly, clearly, really, finally, actually, certainly, probably, possibly, especially, particularly, generally, usually, normally, typically, specifically, basically, simply, easily
+
+# -ER SUFFIX RHYMES
+singer: ringer, winger, bringer, stinger, flinger, clinger, springer, stringer, finger, linger, ginger
+player: slayer, layer, prayer, mayor, betrayer, surveyor, conveyor, purveyor, soothsayer, doomsayer, naysayer
+worker: lurker, smirker, shirker, jerker, perker, networker, reworker, metalworker, steelworker, woodworker, stoneworker, glassworker, leatherworker, needleworker, caseworker, framework, homework, teamwork, artwork, clockwork, footwork, groundwork, handiwork, masterwork, patchwork, schoolwork, spadework, stonework, woodwork, bodywork, coursework, guesswork, housework, lacework, paperwork, roadwork, wirework
+runner: gunner, stunner, shunner, winner, dinner, sinner, thinner, spinner, beginner, breadwinner, prizewinner
+walker: talker, stalker, hawker, squawker, sleepwalker, streetwalker, jaywalker, dogwalker, nightwalker, tightrope walker
+dancer: prancer, lancer, romancer, enhancer, freelancer, necromancer
+reader: leader, feeder, breeder, needer, weeder, seeder, bleeder, pleader, heeder, succeeder, proceeder, exceeder, receder, cheerleader, ringleader, bandleader, teamleader, newsreader, cardreader, mindreader, proofreader, microreader, speedreader
+writer: fighter, biter, lighter, sighter, inviter, delighter, exciter, igniter, citer, uniter, inciter, typewriter, ghostwriter, songwriter, screenwriter, scriptwriter, speechwriter, copywriter, newswriter, sportswriter
+cooker: looker, booker, hooker, brooker, rooker, overlooker, pressure cooker, slow cooker, rice cooker, oven cooker
+sleeper: keeper, leaper, weeper, sweeper, creeper, seeper, reaper, heaper, steeper, beekeeper, gatekeeper, shopkeeper, housekeeper, peacekeeper, scorekeeper, timekeeper, groundskeeper, bookkeeper, storekeeper, zookeeper, gamekeeper, doorkeeper
+laugher: grapher, staffer, chaffer, photographer, biographer, cartographer, choreographer, calligrapher, stenographer, lexicographer, geographer, topographer, demographer, ethnographer, autobiographer, cinematographer, crystallographer, historiographer, oceanographer, paleographer, seismographer, typographer
+lover: shover, glover, cover, discover, recover, uncover, recover, discover, undercover, hardcover, softcover, dustcover, book cover, album cover, magazine cover, ground cover, snow cover, ice cover, cloud cover, tree cover, grass cover, plant cover, flower cover, leaf cover, blanket cover, quilt cover, pillow cover, cushion cover, furniture cover, car cover, boat cover, pool cover, grill cover, table cover, chair cover, sofa cover, bed cover, mattress cover, sheet cover, towel cover, shower cover, curtain cover, window cover, door cover, wall cover, floor cover, ceiling cover, roof cover, house cover, building cover, tent cover, tarp cover, canvas cover, plastic cover, fabric cover, leather cover, metal cover, glass cover, wood cover, stone cover, concrete cover, brick cover, tile cover, carpet cover, rug cover, mat cover, pad cover, liner cover, protector cover, shield cover, guard cover, case cover, sleeve cover, wrapper cover, package cover, box cover, container cover, jar cover, oganesson cover
+thinker: drinker, sinker, winker, linker, shrinker, blinker, twinkler, crinkler, sprinkler, freethinker, deepthinker, quickthinker
+feeler: healer, dealer, sealer, peeler, reeler, stealer, revealer, appealer, concealer, kneeler, squealer, wheeler, four-wheeler, two-wheeler, three-wheeler, eighteen-wheeler, sidewheeler, sternwheeler, paddlewheeler, freewheeler, wheeler-dealer
+builder: gilder, wielder, yielder, shielder, rebuilder, shipbuilder, homebuilder, bodybuilder, housebuilder
+grower: flower, power, tower, hour, shower, sour, our, flour, devour, empower, overpower, watchtower, ivory tower, happy hour, rush hour, meteor shower, sunflower, wildflower, cornflower, cauliflower, wallflower, bellflower, mayflower, passionflower, elderflower, moonflower, starflower, fireflower, rainflower, snowflower, iceflower, windflower, stormflower, thunderflower, lightningflower, cloudflower, mistflower, dewflower, frostflower, springflower, summerflower, fallflower, autumnflower, winterflower, morningflower, eveningflower, nightflower, dayflower, hourflower, minuteflower, secondflower, timeflower, clockflower, watchflower, timerflower, alarmflower, bellflower, chimeflower, whistleflower, hornflower, trumpetflower, drumflower, pianoflower, guitarflower, violinflower, fluteflower, saxophoneflower, clarinetflower, oboeflower, bassoonflower, harpflower, cymbalflower, xylophoneflower, marimbafflower, tambourineflower, triangleflower, castanetsflower, maracasflower, bongoflower, congaflower, kersdorantiteflower
+maker: taker, waker, baker, breaker, shaker, raker, faker, forsaker, undertaker, breathtaker, painstaker, mistaker, remaker, partaker, caretaker, peacemaker, pacemaker, matchmaker, lawmaker, policymaker, filmmaker, shoemaker, bookmaker, clockmaker, watchmaker, toymaker, toolmaker, glassmaker, steelmaker, automaker, homemaker, troublemaker, mischief-maker, widow-maker, money-maker, deal-maker, king-maker, taste-maker, trend-maker, rule-maker, game-maker, name-maker, flame-maker, frame-maker, shame-maker, blame-maker, claim-maker, fame-maker, tame-maker, same-maker, lame-maker, dame-maker, came-maker, shame-maker, flame-maker, frame-maker, game-maker, name-maker, fame-maker, claim-maker, blame-maker, tame-maker, same-maker, lame-maker, dame-maker, came-maker
+
+# -EST SUFFIX RHYMES
+biggest: rigged, wigged, jigged, figged, pigged, digged, swigged, twigged, ziggged, bridged, ridged, judged, nudged, budged, fudged, smudged, grudged, trudged, drudged, sludged
+smallest: tallest, shortest, longest, strongest, weakest, fastest, slowest, oldest, youngest, richest, poorest, smartest, dumbest, kindest, meanest, nicest, worst, best, highest, lowest, deepest, shallowest, widest, narrowest, thickest, thinnest, heaviest, lightest, darkest, brightest, loudest, quietest, hottest, coldest, wettest, driest, cleanest, dirtiest, newest, oldest, freshest, stalest, sweetest, sourest, bitterest, saltiest, spiciest, blandest, smoothest, roughest, softest, hardest, sharpest, dullest, finest, coarsest, purest, dirtiest, clearest, cloudiest, calmest, stormiest, safest, ugliest

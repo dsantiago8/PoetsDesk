@@ -19,12 +19,15 @@ using std::min;
 #include <string>
 #include <locale>
 #include <codecvt>
+#include "DarkMode.h"
+
 
 #pragma comment(lib, "Msftedit.lib")
 
 #define ID_FILE_SAVE 3
 #define ID_EDIT_UNDO 3001
 #define ID_EDIT_FONT 2001
+#define ID_ACCEL_TOGGLEDARK 1005
 
 #ifndef MSFTEDIT_CLASS
 #define MSFTEDIT_CLASS L"RICHEDIT50W"
@@ -58,7 +61,8 @@ bool isModified = false;
 HFONT hFont = nullptr;
 LOGFONT lf = {};
 void SaveAsPDF(HWND hwndParent, HWND hEdit);
-HWND hSavePDFButton;  // Global handle for the button
+HWND hSavePDFButton;
+bool darkModeEnabled = false;
 
 void LoadRhymeDictionary(const std::string& filename) {
     std::ifstream file(filename);
@@ -665,6 +669,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             TCHAR szFile[MAX_PATH] = TEXT("");
 
             switch (LOWORD(wParam)) {
+                case ID_ACCEL_TOGGLEDARK:
+                    darkModeEnabled = !darkModeEnabled;
+                    ApplyDarkModeToEdit(hwnd);
+                    break;
                 case ID_EDIT_UNDO:
                     SendMessage(hEdit, EM_UNDO, 0, 0);
                     break;
@@ -906,7 +914,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
             break;
         }
-        
+        case WM_CTLCOLORBTN: {
+            HDC hdc = (HDC)wParam;
+            ApplyDarkModeToStaticControl(hdc);
+            return (INT_PTR)GetDarkModeBrush();
+        }
         default:
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
@@ -920,9 +932,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
         { FCONTROL | FVIRTKEY, 'S', ID_FILE_SAVE },
         { FCONTROL | FVIRTKEY, 'Z', ID_EDIT_UNDO },
         { FCONTROL | FVIRTKEY, 'R', 1004 },
+        { FCONTROL | FVIRTKEY, 'D', ID_ACCEL_TOGGLEDARK },
     };
     
-    HACCEL hAccel = CreateAcceleratorTable(accelTable, 3);
+    HACCEL hAccel = CreateAcceleratorTable(accelTable, 4);
     LPCTSTR CLASS_NAME = TEXT("PoetsDeskWindowClass");
 
     WNDCLASS wc = {};
