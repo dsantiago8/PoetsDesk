@@ -1,10 +1,42 @@
-night: bright, flight, height, light, might, right, sight, tight
-day: bay, clay, fray, gray, hay, may, play, say, way
-blue: clue, due, flew, glue, knew, new, shoe, true, you
-fire: dire, entire, higher, inspire, liar, quire, require, sire, wire
-love: above, dove, glove, of, shove
-time: chime, climb, crime, dime, mime, prime, rhyme, slime
-rain: brain, chain, drain, gain, main, pain, plain, strain, train
-stone: alone, bone, cone, drone, groan, loan, moan, own, tone
-cold: bold, fold, gold, hold, mold, old, scold, told
-wind: binned, chinned, grinned, pinned, rescinded, skinned, thinned
+night: bright, flight, height, light, might, right, sight, tight, white, bite, kite, write, fight, quite, site, spite, invite, delight, insight, tonight
+day: bay, clay, fray, gray, hay, may, play, say, way, away, stay, pray, lay, pay, display, delay, today, decay, betray, convey, relay, survey, okay
+blue: clue, due, flew, glue, knew, new, shoe, true, you, two, crew, drew, grew, threw, view, few, zoo, do, who, through, pursue, review, renew, undo, canoe
+fire: dire, entire, higher, inspire, liar, quire, require, sire, wire, tire, hire, choir, desire, admire, retire, expire, acquire, inquire, aspire, empire
+love: above, dove, glove, of, shove, dove, push, enough, rough, tough, stuff, bluff, cuff, huff, puff, snuff, scuff, buff
+time: chime, climb, crime, dime, mime, prime, rhyme, slime, lime, sublime, paradigm, overtime, sometime, lifetime, pastime, ragtime, wartime, playtime
+rain: brain, chain, drain, gain, main, pain, plain, strain, train, vain, stain, grain, explain, remain, obtain, contain, sustain, maintain, complain, refrain, domain, campaign, terrain, champagne
+stone: alone, bone, cone, drone, groan, loan, moan, own, tone, throne, phone, shown, grown, known, thrown, blown, flown, prone, zone, clone, postpone, microphone, saxophone, unknown
+cold: bold, fold, gold, hold, mold, old, scold, told, sold, behold, unfold, uphold, withhold, household, threshold, manifold, blindfold, foothold, stronghold, scaffold
+wind: binned, chinned, grinned, pinned, rescinded, skinned, thinned, sinned, twinned, begin, spin, win, thin, din, fin, kin, pin, tin, within, akin, chagrin, discipline, genuine, mandolin, violin, masculine, feminine
+heart: art, part, start, cart, dart, chart, smart, apart, depart, impart, sweetheart, counterpart, upstart, jumpstart, restart, outsmart
+mind: kind, find, blind, bind, wind, behind, remind, refined, defined, combined, designed, assigned, resigned, mankind, confined, inclined, outlined, declined, intertwined, unwind
+soul: goal, role, whole, hole, pole, bowl, roll, toll, coal, foal, mole, stole, control, patrol, enroll, console, parole, cajole, payroll, protocol, buttonhole, casserole
+dream: cream, team, stream, beam, gleam, seem, theme, scheme, extreme, supreme, esteem, redeem, sunbeam, mainstream, downstream, upstream, ice cream, daydream, moonbeam
+hope: rope, cope, slope, scope, pope, mope,elope, grope, envelope, telescope, microscope, horoscope, antelope, cantaloupe, philanthrope, misanthrope
+peace: cease, piece, lease, geese, fleece, crease, grease, increase, decrease, release, police, caprice, masterpiece, centerpiece, nephew, niece
+moon: soon, tune, june, spoon, noon, croon, swoon, balloon, cartoon, raccoon, baboon, maroon, lagoon, typhoon, monsoon, honeymoon, afternoon, immune, commune, fortune
+star: far, car, bar, jar, tar, scar, guitar, bizarre, cigar, radar, avatar, caviar, reservoir, repertoire, jaguar, seminar,icular, popular, similar, familiar
+sea: free, tree, key, bee, tea, knee, flee, glee, three, degree, agree, decree, referee, guarantee, employee, absentee, Tennessee, Cherokee, bumble bee, jamboree
+sky: fly, try, cry, dry, fry, high, lie, pie, tie, die, buy, guy, shy, why, eye, sigh, spy, my, by, rely, reply, supply, deny, comply, occupy, satisfy, qualify, terrify, modify, classify
+sun: fun, run, gun, done, won, one, ton, son, nun, bun, pun, stun, begun, undone, someone, everyone, anyone, overdone, outrun, homerun, shotgun
+rose: chose, close, nose, those, pose, hose, froze, compose, propose, suppose, impose, expose, dispose, enclose, disclose, transpose, decompose, juxtapose
+sweet: meet, feet, neat, beat, heat, seat, treat, wheat, street, complete, repeat, compete, defeat, retreat, discrete, concrete, athlete, elite, obsolete, bittersweet
+green: seen, been, clean, mean, lean, keen, screen, queen, scene, teen, machine, marine, routine, vaccine, cuisine, magazine, submarine, quarantine, wolverine, tangerine
+red: bed, head, dead, said, bread, thread, shed, fed, led, wed, read, spread, ahead, instead, widespread, overhead, gingerbread, thoroughbred, watershed, figurehead
+black: back, pack, track, crack, stack, lack, attack, snack, rack, sack, hack, smack, jack, slack, hijack, comeback, feedback, flashback, paperback, quarterback
+white: bite, kite, write, fight, quite, site, spite, invite, delight, insight, tonight, bright, flight, height, light, might, right, sight, tight, night, polite, ignite, excite, appetite, satellite, dynamite, copyright, highlight, oversight
+water: daughter, slaughter, quarter, shorter, porter, reporter, supporter, transporter, headquarters, manslaughter
+earth: birth, worth, mirth, girth, forth, north, hearth, unearth, rebirth, childbirth, henceforth, thenceforth
+flower: power, tower, hour, shower, sour, our, flour, devour, empower, overpower, watchtower, ivory tower, happy hour, rush hour, meteor shower
+tree: free, sea, key, bee, tea, knee, flee, glee, three, degree, agree, decree, referee, guarantee, employee, absentee, Tennessee, Cherokee, bumble bee, jamboree
+bird: word, heard, third, stirred, occurred, preferred, referred, deferred, conferred, transferred, undeterred, hummingbird, mockingbird
+dance: chance, glance, lance, prance, stance, trance, advance, romance, enhance, entrance, finance, guidance, balance, brilliance, elegance,urance, abundance, resistance, assistance, perseverance
+sing: ring, wing, bring, thing, king, spring, string, swing, sting, fling, cling, ding, ping, zing, wedding ring, everything, anything, something, nothing, offering, suffering, gathering, scattering
+laugh: half, staff, calf, behalf, giraffe, paragraph, photograph, telegraph, autograph, epitaph, phonograph
+cry: fly, try, sky, dry, fry, high, lie, pie, tie, die, buy, guy, shy, why, eye, sigh, spy, my, by, rely, reply, supply, deny, comply, occupy, satisfy, qualify, terrify, modify, classify
+smile: while, style, file, mile, pile, tile, isle, exile, compile, profile, hostile, fragile, fertile, sterile, juvenile, versatile, meanwhile, worthwhile, crocodile
+walk: talk, chalk, stalk, balk, hawk, squawk, tomahawk, sidewalk, crosswalk, catwalk, boardwalk, sleepwalk
+run: fun, sun, gun, done, won, one, ton, son, nun, bun, pun, stun, begun, undone, someone, everyone, anyone, overdone, outrun, homerun, shotgun
+sleep: deep, keep, leap, weep, cheap, heap, steep, sheep, sweep, creep, peep, reap, beep, jeep, asleep, upkeep, doorkeep, shopkeep
+eat: beat, heat, seat, treat, wheat, street, meet, feet, neat, complete, repeat, compete, defeat, retreat, discrete, concrete, athlete, elite, obsolete, bittersweet
+book: look, took, cook, hook, nook, brook, shook, crook, rook, overlook, handbook, notebook, textbook, pocketbook, storybook, yearbook, cookbook
