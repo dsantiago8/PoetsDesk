@@ -61,7 +61,7 @@ void SaveAsPDF(HWND hwndParent, HWND hEdit);
 HWND hSavePDFButton;  // Global handle for the button
 
 void LoadRhymeDictionary(const std::string& filename) {
-    std::ifstream file(filename);  // Use narrow string
+    std::ifstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("Failed to open rhyme_dictionary.txt.");
         return;
@@ -79,6 +79,7 @@ void LoadRhymeDictionary(const std::string& filename) {
         std::string rhyme;
         std::vector<std::wstring> rhymes;
 
+        // Parse all rhyming words from the right side of the colon
         while (std::getline(ss, rhyme, ',')) {
             size_t first = rhyme.find_first_not_of(" \t");
             size_t last = rhyme.find_last_not_of(" \t");
@@ -89,7 +90,31 @@ void LoadRhymeDictionary(const std::string& filename) {
         }
 
         std::wstring wideKey(key.begin(), key.end());
+        
+        // Store the original mapping (key -> all rhymes)
         rhymeDict[wideKey] = rhymes;
+        
+        // Create reverse mappings (each rhyme -> key + other rhymes)
+        for (const auto& rhymeWord : rhymes) {
+            // If this rhyme word doesn't exist as a key yet, create it
+            if (rhymeDict.find(rhymeWord) == rhymeDict.end()) {
+                rhymeDict[rhymeWord] = std::vector<std::wstring>();
+            }
+            
+            // Add the original key word to this rhyme's list (if not already there)
+            auto& currentRhymes = rhymeDict[rhymeWord];
+            if (std::find(currentRhymes.begin(), currentRhymes.end(), wideKey) == currentRhymes.end()) {
+                currentRhymes.push_back(wideKey);
+            }
+            
+            // Add all other rhyme words to this rhyme's list (if not already there)
+            for (const auto& otherRhyme : rhymes) {
+                if (otherRhyme != rhymeWord && 
+                    std::find(currentRhymes.begin(), currentRhymes.end(), otherRhyme) == currentRhymes.end()) {
+                    currentRhymes.push_back(otherRhyme);
+                }
+            }
+        }
     }
 
     file.close();
