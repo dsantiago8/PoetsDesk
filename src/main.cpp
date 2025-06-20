@@ -670,8 +670,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             switch (LOWORD(wParam)) {
                 case ID_ACCEL_TOGGLEDARK:
-                    darkModeEnabled = !darkModeEnabled;
-                    ApplyDarkModeToEdit(hwnd);
+                darkModeEnabled = !darkModeEnabled;
+                wchar_t msg[64];
+                swprintf(msg, L"Dark mode: %s", darkModeEnabled ? L"ON" : L"OFF");
+                MessageBox(hwnd, msg, L"Toggle Debug", MB_OK);  // Debug confirmation
+                ApplyDarkModeToEdit(hEdit);
+                break;
+                   
                     break;
                 case ID_EDIT_UNDO:
                     SendMessage(hEdit, EM_UNDO, 0, 0);
