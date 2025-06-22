@@ -674,6 +674,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 wchar_t msg[64];
                 swprintf(msg, L"Dark mode: %s", darkModeEnabled ? L"ON" : L"OFF");
                 MessageBox(hwnd, msg, L"Toggle Debug", MB_OK);  // Debug confirmation
+                ApplyDarkMode(darkModeEnabled, hwnd);
                 ApplyDarkModeToEdit(hEdit);
                 break;
                    

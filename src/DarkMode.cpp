@@ -1,25 +1,54 @@
 // DarkMode.cpp
 #include "DarkMode.h"
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
 
-static COLORREF bgColor = RGB(30, 30, 30);
-static COLORREF textColor = RGB(220, 220, 220);
-static HBRUSH hBackgroundBrush = CreateSolidBrush(bgColor);
+static bool isDarkMode = false;
 
+static COLORREF darkBgColor = RGB(30, 30, 30);
+static COLORREF darkTextColor = RGB(220, 220, 220);
+
+static COLORREF lightBgColor = RGB(255, 255, 255);
+static COLORREF lightTextColor = RGB(0, 0, 0);
+
+static HBRUSH hDarkBrush = CreateSolidBrush(darkBgColor);
+static HBRUSH hLightBrush = CreateSolidBrush(lightBgColor);
+
+// Toggle handler
+void ApplyDarkMode(bool enable, HWND hwnd) {
+    isDarkMode = enable;
+    InvalidateRect(hwnd, NULL, TRUE);  // Force repaint of all child controls
+    EnableImmersiveDarkMode(hwnd, enable);
+}
+
+// Rich Edit control background + text color
 void ApplyDarkModeToEdit(HWND hEdit) {
-    SendMessage(hEdit, EM_SETBKGNDCOLOR, 0, (LPARAM)bgColor);
+    COLORREF bg = isDarkMode ? darkBgColor : lightBgColor;
+    COLORREF text = isDarkMode ? darkTextColor : lightTextColor;
+
+    SendMessage(hEdit, EM_SETBKGNDCOLOR, 0, (LPARAM)bg);
 
     CHARFORMAT2 cf = {};
     cf.cbSize = sizeof(cf);
     cf.dwMask = CFM_COLOR;
-    cf.crTextColor = textColor;
+    cf.crTextColor = text;
     SendMessage(hEdit, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&cf);
 }
 
+// Static controls (e.g. buttons, labels)
 void ApplyDarkModeToStaticControl(HDC hdc) {
-    SetTextColor(hdc, textColor);
-    SetBkColor(hdc, bgColor);
+    SetTextColor(hdc, isDarkMode ? darkTextColor : lightTextColor);
+    SetBkColor(hdc, isDarkMode ? darkBgColor : lightBgColor);
 }
 
+// Return background brush for static controls
 HBRUSH GetDarkModeBrush() {
-    return hBackgroundBrush;
+    return isDarkMode ? hDarkBrush : hLightBrush;
 }
+
+
+void EnableImmersiveDarkMode(HWND hwnd, bool enable) {
+    BOOL useDark = enable ? TRUE : FALSE;
+    DwmSetWindowAttribute(hwnd, 20 /* DWMWA_USE_IMMERSIVE_DARK_MODE */, &useDark, sizeof(useDark));
+}
+
