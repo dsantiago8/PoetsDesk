@@ -1,7 +1,7 @@
 // DarkMode.cpp
 #include "DarkMode.h"
 #include <dwmapi.h>
-#pragma comment(lib, "dwmapi.lib")
+
 
 static bool isDarkMode = false;
 
