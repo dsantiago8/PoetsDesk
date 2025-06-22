@@ -1,6 +1,6 @@
 // DarkMode.cpp
 #include "DarkMode.h"
-#include <dwmapi.h>
+
 
 
 static bool isDarkMode = false;
@@ -18,7 +18,7 @@ static HBRUSH hLightBrush = CreateSolidBrush(lightBgColor);
 void ApplyDarkMode(bool enable, HWND hwnd) {
     isDarkMode = enable;
     InvalidateRect(hwnd, NULL, TRUE);  // Force repaint of all child controls
-    EnableImmersiveDarkMode(hwnd, enable);
+
 }
 
 // Rich Edit control background + text color
@@ -44,11 +44,5 @@ void ApplyDarkModeToStaticControl(HDC hdc) {
 // Return background brush for static controls
 HBRUSH GetDarkModeBrush() {
     return isDarkMode ? hDarkBrush : hLightBrush;
-}
-
-
-void EnableImmersiveDarkMode(HWND hwnd, bool enable) {
-    BOOL useDark = enable ? TRUE : FALSE;
-    DwmSetWindowAttribute(hwnd, 20 /* DWMWA_USE_IMMERSIVE_DARK_MODE */, &useDark, sizeof(useDark));
 }
 
