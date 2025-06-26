@@ -16,7 +16,7 @@ void StartSpeechRecognition(HWND hEdit) {
 
         pRecoContext->SetNotifyWin32Event();
         HANDLE hEvent = pRecoContext->GetNotifyEventHandle();
-        ULONGLONG interest = SPFEI(SPEI_RECOGNITION);
+        ULONGLONG interest = (1ULL << SPEI_RECOGNITION) | ((1ULL << SPEI_RESERVED1) | (1ULL << SPEI_RESERVED2));
         pRecoContext->SetInterest(interest, interest);
         pRecoContext->CreateGrammar(1, &pGrammar);
 
