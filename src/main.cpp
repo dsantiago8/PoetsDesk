@@ -11,7 +11,6 @@
 #include <sstream>
 #include <wchar.h> 
 #include <algorithm>
-using std::min;
 #include <fstream>
 #include <sstream>
 #include <map>
@@ -20,6 +19,8 @@ using std::min;
 #include <locale>
 #include <codecvt>
 #include "DarkMode.h"
+
+using std::min;
 
 
 #pragma comment(lib, "Msftedit.lib")
