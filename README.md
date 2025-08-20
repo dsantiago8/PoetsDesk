@@ -7,3 +7,4 @@ Poet's Desk is a desktop C++ application designed to assist poetry writers with 
 - Templates for common poetic forms
 - Rhyme/meter checking
 - Save/load poems
+- Voice to text transcription
