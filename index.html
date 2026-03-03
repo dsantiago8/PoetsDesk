@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Poet's Desk</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-inner">
+      <a class="brand" href="#home">Poet's Desk</a>
+      <button class="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="mobileMenu">
+        <a href="#home">Home</a>
+        <a href="#services">Features</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <h1>Write Poetry,<br/>Your Way</h1>
+      <p>A desktop tool designed to help poets with structure, form, rhyme, and inspiration.</p>
+      <a href="#services" class="btn">Explore Features</a>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <div class="section-head">
+      <h2>Features</h2>
+      <p>Everything you need to craft your next masterpiece.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <h3>Poetry Editor</h3>
+        <p>A clean, distraction-free editor built specifically for writing and formatting poetry.</p>
+      </div>
+      <div class="service-card">
+        <h3>Poetic Templates</h3>
+        <p>Sonnet, haiku, villanelle, and more — jump-start your writing with built-in forms.</p>
+      </div>
+      <div class="service-card">
+        <h3>Rhyme &amp; Meter</h3>
+        <p>Instant rhyme suggestions and syllable counting to keep your rhythm on track.</p>
+      </div>
+      <div class="service-card">
+        <h3>Save &amp; Export</h3>
+        <p>Save your poems locally or export them as PDFs to share with the world.</p>
+      </div>
+      <div class="service-card">
+        <h3>Voice to Text</h3>
+        <p>Speak your verses aloud and let the app transcribe them in real time.</p>
+      </div>
+      <div class="service-card">
+        <h3>Dark Mode</h3>
+        <p>Easy on the eyes during late-night writing sessions with a full dark theme.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h2>Get in Touch</h2>
+        <p>Have feedback, ideas, or found a bug? We'd love to hear from you.</p>
+        <ul class="contact-lines">
+          <li><strong>GitHub:</strong> <a href="https://github.com/dsantiago8/PoetsDesk" target="_blank" rel="noopener">dsantiago8/PoetsDesk</a></li>
+          <li><strong>Issues:</strong> <a href="https://github.com/dsantiago8/PoetsDesk/issues" target="_blank" rel="noopener">Submit an issue</a></li>
+        </ul>
+      </div>
+      <div class="contact-card">
+        <form class="contact-form" id="contactForm">
+          <label>
+            Name <span class="req">*</span>
+            <input type="text" name="name" placeholder="Your name" required />
+          </label>
+          <label>
+            Email <span class="req">*</span>
+            <input type="email" name="email" placeholder="your@email.com" required />
+          </label>
+          <label>
+            Message <span class="req">*</span>
+            <textarea name="message" rows="5" placeholder="Your message..." required></textarea>
+          </label>
+          <button type="submit" class="btn">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2025 Poet's Desk. Built with care for poets everywhere.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
